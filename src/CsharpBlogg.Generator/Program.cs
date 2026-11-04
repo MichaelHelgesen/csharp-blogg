@@ -1,31 +1,50 @@
 ﻿using Markdig;
 
-var files = GetFiles("../../content/posts/*.md");
+string outputPath = "../../output";
+string sourcePath = "../../content/posts";
+
+// Filene å gå gjennom. EnumerationOptions er "hvordan skal filene gjennomgås".
+// Her så skal alle filer matche store og små bokstaver i "md".
+
+if (!Directory.Exists(sourcePath))
+{
+    Console.WriteLine($"Kildemappen ({sourcePath}) mangler eller er ikke tilgjengelig");
+    return;
+}
+
+var files = GetFiles(sourcePath, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+
+
+try
+{
+    // Prøv å opprette katalog
+    Directory.CreateDirectory(outputPath);
+}
+catch (UnauthorizedAccessException e)
+{
+    Console.WriteLine($"Ingen tilgang til å opprette {outputPath}");
+    return;
+}
 
 // Iterere over filer
 foreach (var file in files)
 {
-    var reader = ReadAllText(file.FullName);
-    var html = MarkdownToHTML(reader);
-    
-    Console.WriteLine(html);
+    try
+    {
+        var markdown = File.ReadAllText(file.FullName);
+        var html = Markdown.ToHtml(markdown);
+        File.WriteAllText(Path.Combine(outputPath, Path.ChangeExtension(file.Name, "html")), html);
+        Console.WriteLine($"File {file.Name} generated");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error converting and creating file {file.FullName} - {ex}");
+    }
 }
 
-static string ReadAllText(string file)
+FileInfo[] GetFiles(string path, string pattern, EnumerationOptions options)
 {
-    return File.ReadAllText(file);
-}
-
-
-static string MarkdownToHTML(string file)
-{
-    var html = Markdown.ToHtml(file);
-    return html;
-}
-
-FileInfo[] GetFiles(string pattern)
-{
-    return new DirectoryInfo(".").GetFiles(pattern);
+    return new DirectoryInfo(path).GetFiles(pattern, options);
 }
 
 
