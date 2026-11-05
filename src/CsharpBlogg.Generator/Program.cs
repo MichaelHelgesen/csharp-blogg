@@ -60,6 +60,7 @@ foreach (var file in files)
 
         // Skriv til HTML
         File.WriteAllText(Path.Combine(outputPath, Path.ChangeExtension(file.Name, "html")), html);
+        
         Console.WriteLine($"File {file.Name} generated");
     }
     catch (Exception ex)
