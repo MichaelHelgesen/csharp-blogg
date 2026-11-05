@@ -3,17 +3,15 @@
 string outputPath = "../../output";
 string sourcePath = "../../content/posts";
 
-// Filene å gå gjennom. EnumerationOptions er "hvordan skal filene gjennomgås".
-// Her så skal alle filer matche store og små bokstaver i "md".
-
 if (!Directory.Exists(sourcePath))
 {
     Console.WriteLine($"Kildemappen ({sourcePath}) mangler eller er ikke tilgjengelig");
     return;
 }
 
+// Filene å gå gjennom. EnumerationOptions er "hvordan skal filene gjennomgås".
+// Her så skal alle filer matche store og små bokstaver i "md".
 var files = GetFiles(sourcePath, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
-
 
 try
 {
@@ -22,7 +20,7 @@ try
 }
 catch (UnauthorizedAccessException e)
 {
-    Console.WriteLine($"Ingen tilgang til å opprette {outputPath}");
+    Console.WriteLine($"Ingen tilgang til å opprette {outputPath} - {e}");
     return;
 }
 
