@@ -13,12 +13,12 @@ var yamlDeserializer = new DeserializerBuilder()
     .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
     .Build();
 
-string outputPath = "../../output";
-string sourcePath = "../../content/posts";
+string outputPath = "output";
+string sourcePath = "content/posts";
 
 if (!Directory.Exists(sourcePath))
 {
-    Console.WriteLine($"Kildemappen ({sourcePath}) mangler eller er ikke tilgjengelig");
+    Console.WriteLine($"Kildemappen ({sourcePath}) mangler eller er ikke tilgjengelig. Står du i korrekt arbeidsmappe? {Directory.GetCurrentDirectory()}");
     return;
 }
 
@@ -46,6 +46,8 @@ foreach (var file in files)
         var fileAsString = File.ReadAllText(file.FullName); // Leser filen
         var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
         var html = Markdown.ToHtml(markdownTree, markdownPipeline); // Til HTML
+
+       
 
         var post = new Post();
 
