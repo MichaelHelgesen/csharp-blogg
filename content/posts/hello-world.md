@@ -1,3 +1,7 @@
+---
+title: Dette er en test
+---
+
 # Hallo verden!
 
 *Dette er mitt første blogginnlegg i det som forhåpentligvis skal bli min nye nettside basert på egen «[Static Site Generator](https://en.wikipedia.org/wiki/Static_site_generator)», programmert i C#.*
