@@ -1,5 +1,6 @@
 ---
 title: Nytt kamera
+draft: true
 ---
 
 # Nytt kamera: OM-SYSTEM OM-5 Mark II

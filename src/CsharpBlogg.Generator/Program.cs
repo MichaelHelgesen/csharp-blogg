@@ -14,22 +14,20 @@ var yamlDeserializer = new DeserializerBuilder()
     .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
     .Build();
 
-
-
-
 // Prøv å lese konfigurasjonsfilen
 SiteConfig siteConfig;
 
 try
 {
-   siteConfig = LoadConfig();
+    siteConfig = LoadConfig();
 }
-catch
+catch // Beskjed kastes fra metoden.
 {
     return;
 }
 
-    if (!Directory.Exists(siteConfig.ContentPath))
+
+if (!Directory.Exists(siteConfig.ContentPath))
 {
     Console.WriteLine($"Source folder ({siteConfig.ContentPath}) is missing or not accessible. Are you in the correct working directory?: {Directory.GetCurrentDirectory()}");
     return;
@@ -72,16 +70,16 @@ foreach (var file in files)
 
         if (yamlBlock != null)
         {
-            
+
             var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
             post = yamlDeserializer.Deserialize<Post>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
         }
-        
+
         post.Html = html;
 
         // Skriv til HTML
         File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(file.Name, "html")), post.Html);
-        
+
         Console.WriteLine($"File {file.Name} generated");
     }
     catch (Exception ex)
