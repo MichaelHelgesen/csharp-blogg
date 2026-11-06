@@ -18,7 +18,7 @@ string sourcePath = "content/posts";
 
 if (!Directory.Exists(sourcePath))
 {
-    Console.WriteLine($"Kildemappen ({sourcePath}) mangler eller er ikke tilgjengelig. Står du i korrekt arbeidsmappe? {Directory.GetCurrentDirectory()}");
+    Console.WriteLine($"Source folder ({sourcePath}) is missing or not accessible. Are you in the correct working directory?: {Directory.GetCurrentDirectory()}");
     return;
 }
 
@@ -34,7 +34,7 @@ try
 }
 catch (UnauthorizedAccessException e)
 {
-    Console.WriteLine($"Ingen tilgang til å opprette {outputPath} - {e}");
+    Console.WriteLine($"No access to {outputPath} - {e}");
     return;
 }
 
@@ -47,11 +47,10 @@ foreach (var file in files)
         var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
         var html = Markdown.ToHtml(markdownTree, markdownPipeline); // Til HTML
 
-       
-
         var post = new Post();
 
-        var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault();
+        var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
+
         if (yamlBlock != null)
         {
             var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
