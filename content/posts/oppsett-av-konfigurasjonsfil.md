@@ -125,4 +125,4 @@ I `Program.cs` uten Main-metode, det som kalles top-level statements, er `LoadCo
 
 Og den variabelen har ingen verdi ennå når *`LoadConfig` kalles. Den får jo verdien sin fra det `LoadConfig` returnerer, så en tom variabel går bare rundt og rundt. 
 
-Kompilatoren ser dette og melder feilen der metoden kalles.
+Kompilatoren ser dette og melder feilen der metoden kalles. Jeg valgte også å angi metoden som `static`, for kan funksjonen ikke bruke variabler fra koden rundt seg. Den kan bare bruke parameterne sine og variabler den deklarerer selv.

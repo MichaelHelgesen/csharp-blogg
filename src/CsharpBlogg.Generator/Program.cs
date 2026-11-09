@@ -1,8 +1,11 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using CsharpBlogg.Generator.Models;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
+using Scriban;
 using YamlDotNet.Serialization;
 
 var markdownPipeline = new MarkdownPipelineBuilder()
@@ -13,6 +16,18 @@ var yamlDeserializer = new DeserializerBuilder()
     .WithCaseInsensitivePropertyMatching() // Matche små og store bokstaver
     .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
     .Build();
+
+
+// TODO: Se etter argument fra terminal
+/* 
+Console.WriteLine($"parameter count = {args.Length}");
+
+for (int i = 0; i < args.Length; i++)
+{
+    Console.WriteLine($"Arg[{i}] = [{args[i]}]");
+}
+*/
+
 
 // Prøv å lese konfigurasjonsfilen
 SiteConfig siteConfig;
@@ -54,6 +69,7 @@ catch (UnauthorizedAccessException e)
     Console.WriteLine($"No access to {siteConfig.OutputPath} - {e}");
     return;
 }
+List<Post> postList = [];
 
 // Iterere over filer
 foreach (var file in files)
@@ -61,31 +77,136 @@ foreach (var file in files)
     try
     {
         var fileAsString = File.ReadAllText(file.FullName); // Leser filen
+
         var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
-        var html = Markdown.ToHtml(markdownTree, markdownPipeline); // Til HTML
 
         var post = new Post();
 
         var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
-
         if (yamlBlock != null)
         {
-
             var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
             post = yamlDeserializer.Deserialize<Post>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
         }
 
+        var html = Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
+        html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
+
+        if (post.Slug == null || post.Slug == "")
+        {
+            post.Slug = slugConverter(file.Name.Split(".")[0]);
+        }
+        else
+        {
+            post.Slug = slugConverter(post.Slug);
+        }
+
+        if (post.MetaTitle == null || post.MetaTitle == "")
+        {
+            post.MetaTitle = post.Title;
+        }
+
         post.Html = html;
 
-        // Skriv til HTML
-        File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(file.Name, "html")), post.Html);
+        postList.Add(post);
 
-        Console.WriteLine($"File {file.Name} generated");
+        // Skriv til HTML
+        File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(post.Slug??file.Name, "html")), post.Html);
+
+        //Console.WriteLine($"File {file.Name} generated, with slug: {post.Slug}");
+    }
+    catch (IOException ex)
+    {
+        Console.WriteLine($"Error genereating {file.Name} in {siteConfig.OutputPath}: {ex.Message}");
+        throw;
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        Console.WriteLine($"No access to {siteConfig.OutputPath}: {ex.Message}");
+        throw;
     }
     catch (Exception ex)
     {
         Console.WriteLine($"Error converting and creating file {file.FullName} - {ex}");
     }
+}
+
+// Maler
+var templates = GetFiles(siteConfig.TemplatesPath, "*.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+
+foreach (var item in templates)
+{
+    //Console.WriteLine(item.Name);
+
+}
+
+
+// Sider
+if (!Directory.Exists(siteConfig.PagesPath))
+{
+    Console.WriteLine($"Pages folder ({siteConfig.ContentPath}) is missing or not accessible. Are you in the correct working directory?: {Directory.GetCurrentDirectory()}");
+    return;
+}
+
+var pages = GetFiles(siteConfig.PagesPath, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+
+foreach (var item in pages)
+{
+    Console.WriteLine(item.Name);
+    string pageFileName = item.Name.Split(".")[0];
+    var fileAsString = File.ReadAllText(item.FullName); // Leser filen
+
+    var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
+
+    var post = new Post();
+
+    var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
+    if (yamlBlock != null)
+    {
+        var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
+        post = yamlDeserializer.Deserialize<Post>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
+    }
+
+    var html = Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
+    html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
+
+    if (post.Slug == null || post.Slug == "")
+    {
+        post.Slug = slugConverter(item.Name.Split(".")[0]);
+    }
+    else
+    {
+        post.Slug = slugConverter(post.Slug);
+    }
+
+    if (post.MetaTitle == null || post.MetaTitle == "")
+    {
+        post.MetaTitle = post.Title;
+    }
+
+    post.Html = html;
+
+    // SEtte inn template
+    foreach (var template in templates)
+    {
+        if (template.Name.Split(".")[0] == pageFileName)
+        {
+            string content = File.ReadAllText(template.FullName);
+            var templateTEst = Template.Parse(content);
+            var result = templateTEst.Render(new { Name = "World", posts = postList });
+
+            post.Html += result;
+        }
+    }
+
+    // Skriv til HTML
+    File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(post.Slug, "html")), post.Html);
+
+    //Console.WriteLine($"Page {item.Name} generated, with slug: {post.Slug}");
+
+
+
+
 }
 
 static FileInfo[] GetFiles(string path, string pattern, EnumerationOptions options)
@@ -139,4 +260,27 @@ static SiteConfig LoadConfig()
         }
     }
     return siteConfig;
+}
+
+static string slugConverter(string title)
+{
+    string titleCopy = title
+            .ToLowerInvariant()
+            // .Trim()
+            .Replace("ø", "o").Replace("å", "aa").Replace("æ", "ae");
+
+    titleCopy = titleCopy.Normalize(NormalizationForm.FormD);
+    char[] arr = titleCopy.ToCharArray();
+
+    arr = Array.FindAll(arr, c => char.IsAsciiLetterOrDigit(c)
+                                      /* || char.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark - feil*/
+                                      || char.IsWhiteSpace(c)
+                                      || c == '-');
+    titleCopy = new string(arr);
+    titleCopy = Regex.Replace(titleCopy, @"[\s-]+", "-");
+    //test = Regex.Replace(test, @"[-]+", "-");
+    titleCopy = titleCopy.Trim('-'); // kan ikke bruke ", for det er ikke char.
+                                     //titleCopy = titleCopy.TrimStart('-'); // Trim tar begge ender, trenger ikke start og end
+    titleCopy = titleCopy + ".html";
+    return titleCopy;
 }
