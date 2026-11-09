@@ -69,7 +69,7 @@ catch (UnauthorizedAccessException e)
     Console.WriteLine($"No access to {siteConfig.OutputPath} - {e}");
     return;
 }
-List<Post> postList = [];
+List<Post> postList = new List<Post>();
 
 // Iterere over filer
 foreach (var file in files)
@@ -82,6 +82,8 @@ foreach (var file in files)
 
         var post = new Post();
 
+        var html = "";
+
         var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
         if (yamlBlock != null)
         {
@@ -89,8 +91,18 @@ foreach (var file in files)
             post = yamlDeserializer.Deserialize<Post>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
         }
 
-        var html = Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
+        var header = GetFiles(siteConfig.TemplatesPath, "general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
+        string content = File.ReadAllText(header.FullName);
+        var templateTEst = Template.Parse(content);
+
+        html += templateTEst.Render();
+
+        html += Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
         html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
+
+        post.Tags = post.Tags.Select(tag => tag.ToLowerInvariant()).ToList(); // Gjør alle tags til små bokstaver
+
+        post.Created = file.CreationTimeUtc;
 
         if (post.Slug == null || post.Slug == "")
         {
@@ -133,13 +145,6 @@ foreach (var file in files)
 
 // Maler
 var templates = GetFiles(siteConfig.TemplatesPath, "*.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
-
-foreach (var item in templates)
-{
-    //Console.WriteLine(item.Name);
-
-}
-
 
 // Sider
 if (!Directory.Exists(siteConfig.PagesPath))
@@ -218,7 +223,11 @@ static SiteConfig LoadConfig()
 {
     var jsonConfigFilePath = "siteconfig.json"; // Banen til konfigurasjonsfilen
     var siteConfig = new SiteConfig();
-
+    if (!Directory.Exists(siteConfig.ContentPath))
+    {
+        Console.WriteLine($"Source folder ({siteConfig.ContentPath}) is missing or not accessible. Are you in the correct working directory?: {Directory.GetCurrentDirectory()}");
+        return siteConfig;
+    }
     if (File.Exists(jsonConfigFilePath))
     {
         try

@@ -1,6 +1,6 @@
 ---
 title: Utvikle en slugify-metode for nettadresser
-tag: [ssg-prosjekt, csharp]
+tags: [ssg-prosjekt, csharp]
 slug: Dette er slug uten riktig format
 ---
 

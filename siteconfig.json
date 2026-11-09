@@ -1,4 +1,6 @@
 {
   "ContentPath": "content/posts",
-  "OutputPath": "output"
+  "OutputPath": "output",
+  "PagesPath": "content/pages",
+  "TemplatesPath": "templates"
 }

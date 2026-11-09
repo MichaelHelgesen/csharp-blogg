@@ -8,6 +8,7 @@ public class Post
     public string Slug { get; set; }
     public DateTimeOffset? Published { get; set; } = null;
     public DateTimeOffset? Updated { get; set; } = null;
+    public DateTimeOffset? Created { get; set; } = null;
     public List<string> Tags { get; set; } = new List<string>();
     public bool Draft { get; set; } = true;
     public string Html { get; set; } = "";
