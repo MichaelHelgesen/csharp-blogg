@@ -1,5 +1,5 @@
 namespace CsharpBlogg.Generator.Models;
 
-public class Page : Content
+public class Page : ContentItem
 {
 }

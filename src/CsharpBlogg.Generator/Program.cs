@@ -1,12 +1,11 @@
-﻿using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
+﻿using System.Text.Json;
 using CsharpBlogg.Generator.Models;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
 using Scriban;
 using YamlDotNet.Serialization;
+using CsharpBlogg.Generator.Utilities;
 
 var markdownPipeline = new MarkdownPipelineBuilder()
     .UseYamlFrontMatter() // Hente ut YAML
@@ -34,7 +33,7 @@ SiteConfig siteConfig;
 
 try
 {
-    siteConfig = LoadConfig();
+    siteConfig = SiteConfig.LoadConfig();
 }
 catch // Beskjed kastes fra metoden.
 {
@@ -69,7 +68,7 @@ catch (UnauthorizedAccessException e)
     Console.WriteLine($"No access to {siteConfig.OutputPath} - {e}");
     return;
 }
-List<Post> postList = new List<Post>();
+List<Post> postList = [];
 
 // Iterere over filer
 foreach (var file in files)
@@ -106,11 +105,11 @@ foreach (var file in files)
 
         if (post.Slug == null || post.Slug == "")
         {
-            post.Slug = slugConverter(file.Name.Split(".")[0]);
+            post.Slug = Slug.SlugConverter(file.Name.Split(".")[0]);
         }
         else
         {
-            post.Slug = slugConverter(post.Slug);
+            post.Slug = Slug.SlugConverter(post.Slug);
         }
 
         if (post.MetaTitle == null || post.MetaTitle == "")
@@ -120,14 +119,14 @@ foreach (var file in files)
 
         post.Html = html;
 
-        
+
 
         postList.Add(post);
 
         // Skriv til HTML
-        File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(post.Slug??file.Name, "html")), post.Html);
+        File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(post.Slug ?? file.Name, "html")), post.Html);
 
-        //Console.WriteLine($"File {file.Name} generated, with slug: {post.Slug}");
+        Console.WriteLine($"File {file.Name} generated, with slug: {post.Slug}");
     }
     catch (IOException ex)
     {
@@ -159,41 +158,40 @@ var pages = GetFiles(siteConfig.PagesPath, "*.md", new EnumerationOptions { Matc
 
 foreach (var item in pages)
 {
-    Console.WriteLine(item.Name);
     string pageFileName = item.Name.Split(".")[0];
     var fileAsString = File.ReadAllText(item.FullName); // Leser filen
 
 
     var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
 
-    var post = new Page();
+    var page = new Page();
 
 
     var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
     if (yamlBlock != null)
     {
         var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
-        post = yamlDeserializer.Deserialize<Page>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
+        page = yamlDeserializer.Deserialize<Page>(yaml) ?? page; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
     }
 
-    var html = Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
+    var html = Markdown.ToHtml($"# {page.Title}", markdownPipeline); // Tittel fra YAML
     html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
 
-    if (post.Slug == null || post.Slug == "")
+    if (page.Slug == null || page.Slug == "")
     {
-        post.Slug = slugConverter(item.Name.Split(".")[0]);
+        page.Slug = Slug.SlugConverter(item.Name.Split(".")[0]);
     }
     else
     {
-        post.Slug = slugConverter(post.Slug);
+        page.Slug = Slug.SlugConverter(page.Slug);
     }
 
-    if (post.MetaTitle == null || post.MetaTitle == "")
+    if (page.MetaTitle == null || page.MetaTitle == "")
     {
-        post.MetaTitle = post.Title;
+        page.MetaTitle = page.Title;
     }
 
-    post.Html = html;
+    page.Html = html;
 
     // SEtte inn template
     foreach (var template in templates)
@@ -204,14 +202,14 @@ foreach (var item in pages)
             var templateTEst = Template.Parse(content);
             var result = templateTEst.Render(new { Name = "World", posts = postList });
 
-            post.Html += result;
+            page.Html += result;
         }
     }
 
     // Skriv til HTML
-    File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(post.Slug, "html")), post.Html);
+    File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(page.Slug, "html")), page.Html);
 
-    //Console.WriteLine($"Page {item.Name} generated, with slug: {post.Slug}");
+    Console.WriteLine($"Page {item.Name} generated, with slug: {page.Slug}");
 
 
 
@@ -223,77 +221,3 @@ static FileInfo[] GetFiles(string path, string pattern, EnumerationOptions optio
     return new DirectoryInfo(path).GetFiles(pattern, options);
 }
 
-static SiteConfig LoadConfig()
-{
-    var jsonConfigFilePath = "siteconfig.json"; // Banen til konfigurasjonsfilen
-    var siteConfig = new SiteConfig();
-    if (!Directory.Exists(siteConfig.ContentPath))
-    {
-        Console.WriteLine($"Source folder ({siteConfig.ContentPath}) is missing or not accessible. Are you in the correct working directory?: {Directory.GetCurrentDirectory()}");
-        return siteConfig;
-    }
-    if (File.Exists(jsonConfigFilePath))
-    {
-        try
-        {
-            var jsonContent = File.ReadAllText(jsonConfigFilePath);
-            siteConfig = JsonSerializer.Deserialize<SiteConfig>(jsonContent) ?? siteConfig;
-        }
-        catch (JsonException ex)
-        {
-            Console.WriteLine($"Error deserializing {jsonConfigFilePath}: {ex.Message}");
-            throw;
-        }
-        catch (IOException ex)
-        {
-            Console.WriteLine($"Error reading {jsonConfigFilePath}: {ex.Message}");
-            throw;
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            Console.WriteLine($"No access to {jsonConfigFilePath}: {ex.Message}");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Unexpected error with {jsonConfigFilePath}: {ex.Message}");
-            throw;
-        }
-    }
-    else
-    {
-        try
-        {
-            Console.WriteLine($"Missing {jsonConfigFilePath}, attempting to create one with default values.");
-            File.WriteAllText(jsonConfigFilePath, JsonSerializer.Serialize(siteConfig, new JsonSerializerOptions { WriteIndented = true })); // writeIndented = true som gir penere formatering.
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Could not create {jsonConfigFilePath}: {ex.Message}");
-        }
-    }
-    return siteConfig;
-}
-
-static string slugConverter(string title)
-{
-    string titleCopy = title
-            .ToLowerInvariant()
-            // .Trim()
-            .Replace("ø", "o").Replace("å", "aa").Replace("æ", "ae");
-
-    titleCopy = titleCopy.Normalize(NormalizationForm.FormD);
-    char[] arr = titleCopy.ToCharArray();
-
-    arr = Array.FindAll(arr, c => char.IsAsciiLetterOrDigit(c)
-                                      /* || char.GetUnicodeCategory(c) != System.Globalization.UnicodeCategory.NonSpacingMark - feil*/
-                                      || char.IsWhiteSpace(c)
-                                      || c == '-');
-    titleCopy = new string(arr);
-    titleCopy = Regex.Replace(titleCopy, @"[\s-]+", "-");
-    //test = Regex.Replace(test, @"[-]+", "-");
-    titleCopy = titleCopy.Trim('-'); // kan ikke bruke ", for det er ikke char.
-                                     //titleCopy = titleCopy.TrimStart('-'); // Trim tar begge ender, trenger ikke start og end
-    titleCopy = titleCopy + ".html";
-    return titleCopy;
-}

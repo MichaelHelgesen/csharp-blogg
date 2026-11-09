@@ -1,6 +1,6 @@
 namespace CsharpBlogg.Generator.Models;
 
-public class Content
+public class ContentItem
 {
     public string? Title { get; set; } 
     public string? MetaTitle { get; set; } 
