@@ -120,6 +120,8 @@ foreach (var file in files)
 
         post.Html = html;
 
+        
+
         postList.Add(post);
 
         // Skriv til HTML
@@ -161,15 +163,17 @@ foreach (var item in pages)
     string pageFileName = item.Name.Split(".")[0];
     var fileAsString = File.ReadAllText(item.FullName); // Leser filen
 
+
     var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
 
-    var post = new Post();
+    var post = new Page();
+
 
     var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
     if (yamlBlock != null)
     {
         var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
-        post = yamlDeserializer.Deserialize<Post>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
+        post = yamlDeserializer.Deserialize<Page>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
     }
 
     var html = Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
