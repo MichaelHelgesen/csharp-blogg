@@ -1,6 +1,7 @@
 ---
 title: Nytt kamera
 draft: true
+published: 2026-11-05
 ---
 
 # Nytt kamera: OM-SYSTEM OM-5 Mark II

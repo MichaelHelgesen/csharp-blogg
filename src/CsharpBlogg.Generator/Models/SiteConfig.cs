@@ -11,7 +11,7 @@ public class SiteConfig
     public string SiteUrl { get; set; } = string.Empty;
     public string BasePath { get; set; } = string.Empty;
 
-    public static SiteConfig LoadConfig()
+    public static SiteConfig Load()
     {
         var jsonConfigFilePath = "siteconfig.json"; // Banen til konfigurasjonsfilen
         var siteConfig = new SiteConfig();

@@ -33,7 +33,7 @@ SiteConfig siteConfig;
 
 try
 {
-    siteConfig = SiteConfig.LoadConfig();
+    siteConfig = SiteConfig.Load();
 }
 catch // Beskjed kastes fra metoden.
 {
@@ -93,7 +93,6 @@ foreach (var file in files)
         var header = GetFiles(siteConfig.TemplatesPath, "general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
         string content = File.ReadAllText(header.FullName);
         var templateTEst = Template.Parse(content);
-
 
         html += templateTEst.Render(new { basepath = siteConfig.BasePath });
 

@@ -1,5 +1,6 @@
 ---
 title: Oppsett av konfigurasjonsfil
+published: 2026-11-06
 ---
 
 # Opprettelse av konfigurasjonsfil

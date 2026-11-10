@@ -1,5 +1,6 @@
 ---
 title: Metadata med YAML
+published: 2026-11-05
 ---
 
 # Metadata med YAML

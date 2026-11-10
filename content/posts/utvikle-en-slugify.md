@@ -2,6 +2,7 @@
 title: Utvikle en slugify-metode for nettadresser
 tags: [ssg-prosjekt, csharp]
 slug: Dette er slug uten riktig format
+published: 2026-11-07 
 ---
 
 **Jeg utviklet en slug-metode for å generere URL-er til blogginnleggene i min statiske sidegenerator. Det krevde mer enn antatt**

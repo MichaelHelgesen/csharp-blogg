@@ -1,5 +1,6 @@
 ---
 title: Dette er en test
+published: 2026-11-05
 ---
 
 # Hallo verden!
