@@ -10,5 +10,5 @@ public class ContentItem
     public DateTimeOffset? Updated { get; set; }
     public DateTimeOffset? Created { get; set; }
     public bool Draft { get; set; } = true;
-    public string Html { get; set; } = "";
+    public string? Html { get; set; }
 }

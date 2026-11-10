@@ -1,8 +1,6 @@
-Dette er en template.
-Hello {{ name }}!
 <ul>
 {{~ for post in posts ~}}
-  <li><span>{{ post.created }}</span><a href="{{ post.slug }}">{{ post.title }}</a>
+  <li><span>{{ post.created | date:"yyyy-MM-dd" }}: </span><a href="{{ post.slug }}">{{ post.title }}</a>
 	<ul>
 	{{~ for tag in post.tags ~}}
 		<li>{{ tag }}</li>

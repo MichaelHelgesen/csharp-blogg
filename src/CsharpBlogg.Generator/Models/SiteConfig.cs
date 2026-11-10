@@ -8,8 +8,8 @@ public class SiteConfig
     public string OutputPath { get; set; } = "output";
     public string PagesPath { get; set; } = "content/pages";
     public string TemplatesPath { get; set; } = "templates";
-    public string SiteUrl { get; set; } = "";
-    public string BasePath { get; set; } = "";
+    public string SiteUrl { get; set; } = string.Empty;
+    public string BasePath { get; set; } = string.Empty;
 
     public static SiteConfig LoadConfig()
     {
