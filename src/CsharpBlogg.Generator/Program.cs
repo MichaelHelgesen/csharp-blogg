@@ -94,7 +94,8 @@ foreach (var file in files)
         string content = File.ReadAllText(header.FullName);
         var templateTEst = Template.Parse(content);
 
-        html += templateTEst.Render();
+
+        html += templateTEst.Render(new { basepath = siteConfig.BasePath });
 
         html += Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
         html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
