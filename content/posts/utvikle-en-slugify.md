@@ -217,3 +217,14 @@ Følgende konklusjon:
 | Metatittel           | `metaTitle` i frontmatter | Tittelen                                                        |
 | Kladd                | `draft` i frontmatter     | `false` som standard, og automatisk false dersom tittel mangler |
 
+
+Med det, er alle oppgaver i del 2 av fase 1 fullført. Neste steg er å implementere maler, og koble dem til innholdet.
+
+**Del 2 av fase 1 fullført!:**
+- [x] URL-vennlige titler på filer
+- [x] Flytte stiene til mappene til en konfigurasjonsfil og lese den inn ved oppstart
+- [x] Håndtere at konfigurasjonsfilen mangler eller har feil
+- [x] Lage en klasse eller record for innlegg (`Post`) med tittel, dato, tags og HTML
+- [x] Skille frontmatter fra resten av Markdown-filen
+- [x] Lese frontmatter med YamlDotNet og fylle `Post`
+- [x] Sørge for at YAML-blokken ikke havner i HTML-en

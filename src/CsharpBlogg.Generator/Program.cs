@@ -68,6 +68,9 @@ var pages = LoadContent<Page>(siteConfig, siteConfig.PageFolder);
 
 foreach (var contentItem in posts)
 {
+    
+    contentItem.Normalize(); // Normaliserer innholdet, f.eks. gjør alle tags til små bokstaver.
+
     var markdownPipeline = new MarkdownPipelineBuilder()
         .UseYamlFrontMatter() // Hente ut YAML
         .Build(); // Bygge rørgaten.
@@ -87,8 +90,8 @@ foreach (var contentItem in posts)
     html += contentItem.Html;
     contentItem.Html = html;
     // Skriv til HTML
+    //File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug?? file.Name, "html")), contentItem.Html);
     File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug, "html")), contentItem.Html);
-
     Console.WriteLine($"File {contentItem.Title} generated, with slug: {contentItem.Slug}");
 }
 
@@ -129,6 +132,8 @@ foreach (var contentItem in pages)
     contentItem.Html += html;
     contentItem.Html += lastContent;
     // Skriv til HTML
+    // TODO: Hvordan håndtere at slug kan være null? Skal vi bruke filnavnet i så fall? Men hvordan skal vi få tak i filnavnet her? Skal vi legge til en property for filnavn i ContentItem?
+    //File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug?? file.Name, "html")), contentItem.Html);
     File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug, "html")), contentItem.Html);
 
     Console.WriteLine($"File {contentItem.Title} generated, with slug: {contentItem.Slug}");
