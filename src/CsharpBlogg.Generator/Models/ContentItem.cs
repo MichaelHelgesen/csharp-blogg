@@ -1,6 +1,6 @@
 namespace CsharpBlogg.Generator.Models;
 
-public class ContentItem
+public abstract class ContentItem // Abstrakt: kan ikke instansieres direkte, men kan brukes som baseklasse for andre klasser.
 {
     public string? Title { get; set; } 
     public string? MetaTitle { get; set; } 
@@ -11,8 +11,9 @@ public class ContentItem
     public DateTime? Created { get; set; }
     public bool Draft { get; set; } = true;
     public string? Html { get; set; }
-    
-    public virtual void Normalize()
+    public string Filename { get; set; } = string.Empty;
+
+    public virtual void Normalize() // Virtuel metode: kan overstyres i avledede klasser.
     {
         
     }
