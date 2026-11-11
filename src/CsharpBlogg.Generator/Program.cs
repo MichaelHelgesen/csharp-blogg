@@ -1,20 +1,11 @@
-﻿using System.Text.Json;
-using CsharpBlogg.Generator.Models;
+﻿using CsharpBlogg.Generator.Models;
 using Markdig;
 using Markdig.Extensions.Yaml;
 using Markdig.Syntax;
 using Scriban;
 using YamlDotNet.Serialization;
 using CsharpBlogg.Generator.Utilities;
-
-var markdownPipeline = new MarkdownPipelineBuilder()
-    .UseYamlFrontMatter() // Hente ut YAML
-    .Build(); // Bygge rørgaten.
-
-var yamlDeserializer = new DeserializerBuilder()
-    .WithCaseInsensitivePropertyMatching() // Matche små og store bokstaver
-    .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
-    .Build();
+using Scriban.Syntax;
 
 
 // TODO: Se etter argument fra terminal
@@ -40,7 +31,7 @@ catch // Beskjed kastes fra metoden.
     return;
 }
 
-
+// Sjekk etter mappe med post og pages
 if (!Directory.Exists(siteConfig.ContentPath))
 {
     Console.WriteLine($"Source folder ({siteConfig.ContentPath}) is missing or not accessible. Are you in the correct working directory?: {Directory.GetCurrentDirectory()}");
@@ -50,14 +41,17 @@ if (!Directory.Exists(siteConfig.ContentPath))
 
 // Filene å gå gjennom. EnumerationOptions er "hvordan skal filene gjennomgås".
 // Her så skal alle filer matche store og små bokstaver i "md".
-var files = GetFiles(siteConfig.ContentPath, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
-
-if (files.Length == 0)
-{
-    Console.WriteLine($"No markdown files found in source folder: {siteConfig.ContentPath}");
-    return;
-}
-
+///var posts = GetFiles(siteConfig.ContentPath + siteConfig.PostFolder, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+//var pages = GetFiles(siteConfig.ContentPath + siteConfig.PageFolder, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive});
+//var contentFiles = GetFiles(siteConfig.ContentPath, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive, RecurseSubdirectories = true });
+/*
+    Console.WriteLine(contentFiles.Length);
+    if (contentFiles.Length == 0)
+    {
+        Console.WriteLine($"No markdown files found in source folder: {siteConfig.ContentPath}");
+        return;
+    }
+*/
 try
 {
     // Prøv å opprette katalog
@@ -68,82 +62,79 @@ catch (UnauthorizedAccessException e)
     Console.WriteLine($"No access to {siteConfig.OutputPath} - {e}");
     return;
 }
-List<Post> postList = [];
 
-// Iterere over filer
-foreach (var file in files)
+var posts = LoadContent<Post>(siteConfig, siteConfig.PostFolder);
+var pages = LoadContent<Page>(siteConfig, siteConfig.PageFolder);
+
+foreach (var contentItem in posts)
 {
-    try
-    {
-        var fileAsString = File.ReadAllText(file.FullName); // Leser filen
+    var markdownPipeline = new MarkdownPipelineBuilder()
+        .UseYamlFrontMatter() // Hente ut YAML
+        .Build(); // Bygge rørgaten.
 
-        var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
+    var header = GetFiles(siteConfig.TemplatesPath, "general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
+    string content = File.ReadAllText(header.FullName);
+    var templateTEst = Template.Parse(content);
 
-        var post = new Post();
+    var html = "";
 
-        var html = "";
+    html += templateTEst.Render(new { basepath = siteConfig.BasePath });
 
-        var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
-        if (yamlBlock != null)
-        {
-            var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
-            post = yamlDeserializer.Deserialize<Post>(yaml) ?? post; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
-        }
+    html += Markdown.ToHtml($"# {contentItem.Title}", markdownPipeline); // Tittel fra YAML
 
-        var header = GetFiles(siteConfig.TemplatesPath, "general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
-        string content = File.ReadAllText(header.FullName);
-        var templateTEst = Template.Parse(content);
+            var type = contentItem.GetType().Name;
 
-        html += templateTEst.Render(new { basepath = siteConfig.BasePath });
+    html += contentItem.Html;
+    contentItem.Html = html;
+    // Skriv til HTML
+    File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug, "html")), contentItem.Html);
 
-        html += Markdown.ToHtml($"# {post.Title}", markdownPipeline); // Tittel fra YAML
-        html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
-
-        post.Tags = post.Tags.Select(tag => tag.ToLowerInvariant()).ToList(); // Gjør alle tags til små bokstaver
-
-        post.Created = file.CreationTimeUtc;
-
-        if (post.Slug == null || post.Slug == "")
-        {
-            post.Slug = Slug.SlugConverter(file.Name.Split(".")[0]);
-        }
-        else
-        {
-            post.Slug = Slug.SlugConverter(post.Slug);
-        }
-
-        if (post.MetaTitle == null || post.MetaTitle == "")
-        {
-            post.MetaTitle = post.Title;
-        }
-
-        post.Html = html;
-
-
-
-        postList.Add(post);
-
-        // Skriv til HTML
-        File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(post.Slug ?? file.Name, "html")), post.Html);
-
-        Console.WriteLine($"File {file.Name} generated, with slug: {post.Slug}");
-    }
-    catch (IOException ex)
-    {
-        Console.WriteLine($"Error genereating {file.Name} in {siteConfig.OutputPath}: {ex.Message}");
-        throw;
-    }
-    catch (UnauthorizedAccessException ex)
-    {
-        Console.WriteLine($"No access to {siteConfig.OutputPath}: {ex.Message}");
-        throw;
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error converting and creating file {file.FullName} - {ex}");
-    }
+    Console.WriteLine($"File {contentItem.Title} generated, with slug: {contentItem.Slug}");
 }
 
+foreach (var contentItem in pages)
+{
+    var markdownPipeline = new MarkdownPipelineBuilder()
+        .UseYamlFrontMatter() // Hente ut YAML
+        .Build(); // Bygge rørgaten.
+
+    var header = GetFiles(siteConfig.TemplatesPath, "general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
+    string content = File.ReadAllText(header.FullName);
+    var templateTEst = Template.Parse(content);
+
+    var html = "";
+
+    html += templateTEst.Render(new { basepath = siteConfig.BasePath });
+
+    html += Markdown.ToHtml($"# {contentItem.Title}", markdownPipeline); // Tittel fra YAML
+
+            var type = contentItem.GetType().Name;
+
+
+    if (type == "Page")
+    Console.WriteLine(type);
+    {
+        var index = Directory.EnumerateFiles(
+            siteConfig.TemplatesPath,
+            "index.html",
+            new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }
+        ).FirstOrDefault();
+        string content2 = File.ReadAllText(index);
+        var templateTEst2 = Template.Parse(content2);
+        var result = templateTEst2.Render(new { Name = "World", posts = posts });
+        html += result;
+    }
+    var lastContent = contentItem.Html;
+    contentItem.Html = "";
+    contentItem.Html += html;
+    contentItem.Html += lastContent;
+    // Skriv til HTML
+    File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug, "html")), contentItem.Html);
+
+    Console.WriteLine($"File {contentItem.Title} generated, with slug: {contentItem.Slug}");
+}
+
+/*
 // Maler
 var templates = GetFiles(siteConfig.TemplatesPath, "*.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
 
@@ -214,10 +205,91 @@ foreach (var item in pages)
 
 
 
-}
+}*/
 
 static FileInfo[] GetFiles(string path, string pattern, EnumerationOptions options)
 {
     return new DirectoryInfo(path).GetFiles(pattern, options);
+}
+
+
+static List<T> LoadContent<T>(SiteConfig siteConfig, string contentFolder) where T : ContentItem, new()
+{
+
+    var markdownPipeline = new MarkdownPipelineBuilder()
+    .UseYamlFrontMatter() // Hente ut YAML
+    .Build(); // Bygge rørgaten.
+
+    var yamlDeserializer = new DeserializerBuilder()
+        .WithCaseInsensitivePropertyMatching() // Matche små og store bokstaver
+        .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
+        .Build();
+
+    var files = GetFiles(siteConfig.ContentPath + "/" + contentFolder, "*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+
+    List<T> Content = [];
+
+    // Iterere over filer
+    foreach (var file in files)
+    {
+        try
+        {
+
+            var fileAsString = File.ReadAllText(file.FullName); // Leser filen
+
+            var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
+
+            var html = "";
+
+            var contentItem = new T();
+
+
+            var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
+            if (yamlBlock != null)
+            {
+                var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
+                contentItem = yamlDeserializer.Deserialize<T>(yaml) ?? contentItem; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
+            }
+
+            html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
+            contentItem.Created = file.CreationTimeUtc;
+
+            if (contentItem.Slug == null || contentItem.Slug == "")
+            {
+                contentItem.Slug = Slug.SlugConverter(file.Name.Split(".")[0]);
+            }
+            else
+            {
+                contentItem.Slug = Slug.SlugConverter(contentItem.Slug);
+            }
+
+            if (contentItem.MetaTitle == null || contentItem.MetaTitle == "")
+            {
+                contentItem.MetaTitle = contentItem.Title;
+            }
+            
+            contentItem.Html = html;
+
+            Content.Add(contentItem);
+
+
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Error genereating {file.Name} in {siteConfig.OutputPath}: {ex.Message}");
+            throw;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            Console.WriteLine($"No access to {siteConfig.OutputPath}: {ex.Message}");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error converting and creating file {file.FullName} - {ex}");
+        }
+
+    }
+    return Content;
 }
 

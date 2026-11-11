@@ -11,4 +11,9 @@ public class ContentItem
     public DateTime? Created { get; set; }
     public bool Draft { get; set; } = true;
     public string? Html { get; set; }
+    
+    public virtual void Normalize()
+    {
+        
+    }
 }

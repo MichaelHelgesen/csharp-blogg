@@ -1,7 +1,8 @@
 {
-  "ContentPath": "content/posts",
+  "ContentPath": "content",
   "OutputPath": "output",
-  "PagesPath": "content/pages",
+  "PostFolder": "posts",
+  "PagesFolder": "pages",
   "TemplatesPath": "templates",
   "SiteUrl": "",
   "BasePath": "/csharp-blogg"
