@@ -248,7 +248,6 @@ static List<T> LoadContent<T>(SiteConfig siteConfig, string contentFolder) where
 
             var contentItem = new T();
 
-
             var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
             if (yamlBlock != null)
             {

@@ -1,7 +1,7 @@
 ---
 published: 2026-11-10
 title: Nettsiden er lansert!
-tags: ["csharp", "ssg-prosjekt", "scriban"]
+tags: ["csharp", "ssg-prosjekt", "github", "scriban"]
 ---
 
 **Min nye nettside er live på Github! Pen, innholdsrik og interessant er den ikke, men det fungerer. Og jeg har programmert det selv.**

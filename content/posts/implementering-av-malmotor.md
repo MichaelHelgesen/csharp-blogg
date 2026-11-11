@@ -58,9 +58,24 @@ Jeg laget også en enkelt `header.html` i `/templates/general`, som skal brukes 
 
 ```html
 <header>
-    <h1><a href="/">My Homepage</a></h1>
+    <h1><a href="{{ basepath }}">My Homepage</a></h1>
 </header>
 ```
+
+Her er et enkelt eksempel på hvordan en slik header-mal fungerer:
+
+```csharp
+var header = GetFiles(siteConfig.TemplatesPath, "general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
+string content = File.ReadAllText(header.FullName);
+var templateTest = Template.Parse(content);
+html += templateTest.Render(new { basepath = siteConfig.BasePath });
+```
+
+Først henter jeg header-malen.
+
+Deretter leser jeg innholdet i filen, og så parser jeg innholdet med Scriban. Det betyr at Scriban leser innholdet og ser etter felter som `{{ basepath }}` for å kunne erstatte dem med verdier.
+
+Til slutt render jeg malen, og sender inn verdien for `basepath` som skal erstatte `{{ basepath }}` i malen.
 
 Hvordan maler skal struktureres og organiseres er ikke helt klart for meg enda, men jeg antar at det vil bli tydeligere etter hvert som jeg implementerer flere maler og funksjoner.
 

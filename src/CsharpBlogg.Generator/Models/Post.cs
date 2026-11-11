@@ -7,6 +7,6 @@ public class Post : ContentItem
     public override void Normalize()
     {
         base.Normalize();
-        Tags??= [.. Tags.Select(tag => tag.ToLowerInvariant())]; // Gjør alle tags til små bokstaver
+        Tags = Tags.Select(tag => tag.ToLowerInvariant()).ToList(); // Gjør alle tags til små bokstaver
     }
 }
