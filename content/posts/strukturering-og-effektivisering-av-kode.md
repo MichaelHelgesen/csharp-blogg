@@ -1,6 +1,6 @@
 ---
 published: 2026-11-11
-title: Strukturering og effektivisering av kode: generics og polymorfisme i praksis
+title: "Strukturering og effektivisering av kode: generics og polymorfisme i praksis"
 tags: ["csharp", "ssg-prosjekt"]
 ---
 
