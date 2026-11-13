@@ -268,3 +268,67 @@ Deretter finner jeg hovedmalen `default.html`, leser innholdet, parser det og re
 
 Da vil alle `include`-direktivene i malen automatisk bruke `MyIncludeFromDisk` til å laste inn de nødvendige malene.
 
+## Annet lært i denne omgangen
+
+### Rydding
+
+Jeg hadde følgende: 
+
+```csharp
+var posts = ContentReader.LoadContent<Post>(siteConfig, siteConfig.PostFolder);
+var pages = ContentReader.LoadContent<Page>(siteConfig, siteConfig.PageFolder);
+```
+
+Her sender jeg siteConfig to ganger... Det er unødvendig.
+
+La heller til følgende i `ContentReader`:
+
+```csharp
+string contentFolder = typeof(T).Name.ToLower() + "s"; // Hvilken type innhold er det? Page eller Post?
+```
+
+Men det er dumt igjen. For her kan det bli krøll med mappenavn, med å legge på "s" osv.
+
+Bedre å legge det som `get`-felter i SiteConfig:
+
+```csharp
+    public string PostFolderPath => Path.Combine(ContentPath, PostFolder);
+    public string PageFolderPath => Path.Combine(ContentPath, PageFolder);
+```
+
+Da kan jeg i `Program.cs` gjøre følgende:
+
+```csharp
+var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
+var pages = ContentReader.LoadContent<Page>(siteConfig.PageFolderPath);
+```
+
+### Logikk i oppbygningen av malene
+
+Etter tenkning og dialog med meg selv, har jeg kommet frem til følgende prioriteringsliste for hvordan malene skal velges:
+
+1. Sjekk YAML etter spesialmal.
+2. Sjekk mappe og filnavn av markdown mot mappe og filnavn i templates.
+3. Dersom ikke match i punkt 2 bruk typemalen, så side får malen i for eksempel `/pages/_default.html`, og innlegg: `/post/_default.html` (prefiks for å unngå ev. treff mot filnavn).
+4. Dersom ingen match på type-folder, bruk den mest grunnleggende malen i `/general`.
+
+### Annet jeg har lært i prosessen:
+
+- Lærte at `return` kan brukes med 1 for feil, og 0 for suksess.
+- La inn mer inline stil.
+- Flyttet ContentConverter metoden til egen fil under `/Services`.
+- Det er øverste nivå i koden som skal ta seg av feilbeskjeder og stoppingen av programmet. Metodene skal helst ikke stoppe programmet:
+
+```csharp
+// Prøv å lese konfigurasjonsfilen
+SiteConfig siteConfig;
+try
+{
+    siteConfig = SiteConfig.Load();
+}
+catch (Exception e)
+{
+    Console.WriteLine($"Error loading site configuration: {e.Message}");
+    return 1;
+}
+```
