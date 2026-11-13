@@ -9,7 +9,7 @@ namespace CsharpBlogg.Generator.Services
 {
     internal class ContentReader
     {
-        public static List<T> LoadContent<T>(SiteConfig siteConfig, string contentFolder) where T : ContentItem, new()
+        public static List<T> LoadContent<T>(string contentFolder) where T : ContentItem, new()
         {
             var markdownPipeline = new MarkdownPipelineBuilder()
                 .UseYamlFrontMatter() // Hente ut YAML
@@ -19,11 +19,14 @@ namespace CsharpBlogg.Generator.Services
                 .WithCaseInsensitivePropertyMatching() // Matche små og store bokstaver
                 .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
                 .Build();
-            
-            var files = new DirectoryInfo(siteConfig.ContentPath + "/" + contentFolder).GetFiles("*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+
+
+            //string contentFolder = typeof(T).Name.ToLower() + "s"; // Hvilken type innhold er det? Page eller Post?
+
+            var files = new DirectoryInfo(contentFolder).GetFiles("*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
             if (files.Length == 0)
             {
-                Console.WriteLine($"No markdown files found in source folder: {siteConfig.ContentPath + "/" + contentFolder}");
+                Console.WriteLine($"No markdown files found in source folder: {contentFolder}");
                 return new List<T>();
             }
 
@@ -78,12 +81,12 @@ namespace CsharpBlogg.Generator.Services
                 }
                 catch (IOException ex)
                 {
-                    Console.WriteLine($"Error reading {file.Name} in {siteConfig.OutputPath}: {ex.Message}");
+                    Console.WriteLine($"Error reading {file.Name}: {ex.Message}");
                     throw;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    Console.WriteLine($"No access to {siteConfig.OutputPath}: {ex.Message}");
+                    Console.WriteLine($"No access to {file.Name}: {ex.Message}");
                     throw;
                 }
                 catch (Exception ex)

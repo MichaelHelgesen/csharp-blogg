@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-
+﻿using System.Runtime.CompilerServices;
+using System.Text.Json;
 namespace CsharpBlogg.Generator.Models;
 
 public class SiteConfig
@@ -11,6 +11,8 @@ public class SiteConfig
     public string TemplatesPath { get; set; } = "templates";
     public string SiteUrl { get; set; } = string.Empty;
     public string BasePath { get; set; } = string.Empty;
+    public string PostFolderPath => Path.Combine(ContentPath, PostFolder);
+    public string PageFolderPath => Path.Combine(ContentPath, PageFolder);
 
     public static SiteConfig Load()
     {
@@ -36,7 +38,7 @@ public class SiteConfig
             catch (IOException ex)
             {
                 Console.WriteLine($"Error reading {jsonConfigFilePath}: {ex.Message}");
-                throw;
+                throw;  
             }
             catch (UnauthorizedAccessException ex)
             {

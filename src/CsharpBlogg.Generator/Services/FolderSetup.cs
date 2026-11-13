@@ -5,7 +5,7 @@ namespace CsharpBlogg.Generator.Services
 {
     internal class FolderSetup
     {
-        internal static void runFolderSetup(SiteConfig siteConfig)
+        internal static void RunFolderSetup(SiteConfig siteConfig)
         {
             if (!Directory.Exists(siteConfig.ContentPath)) // Sjekk etter mappe med post og pages
             {

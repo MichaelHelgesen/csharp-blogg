@@ -12,6 +12,7 @@ public abstract class ContentItem // Abstrakt: kan ikke instansieres direkte, me
     public bool Draft { get; set; } = true;
     public string? Html { get; set; }
     public string Filename { get; set; } = string.Empty;
+    public string Template { get; set; } = string.Empty;
 
     public virtual void Normalize() // Virtuel metode: kan overstyres i avledede klasser.
     {
