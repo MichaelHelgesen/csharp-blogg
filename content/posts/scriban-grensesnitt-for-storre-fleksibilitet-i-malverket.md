@@ -333,3 +333,27 @@ catch (Exception e)
     return 1;
 }
 ```
+
+Med det er del 4 i fase 1 av prosjektet ferdig:
+
+_Struktur_
+- [x] Dele `Program.cs` i tydelige steg: 
+	- [x] Last konfigurasjon
+	- [x] Les innhold
+	- [x] Lag HTML
+	- [x] Skriv filer
+- [x] Skille _innsamling_ fra _skriving_: først alle `ContentItem`-objekter i lister, deretter sidene
+- [x] Flytte `LoadConfig` til `SiteConfig.Load()` eller en egen klasse
+- [x] Flytte `Slugify` til `Utilities/`
+- [x] Én felles metode for å lese både sider og innlegg
+
+_Rydding_
+- [x] Konsekvente namespaces, tilgangsmodifikatorer og `static` der det passer
+- [x] Fjerne død kode og utkommentert kode
+- [x] Gå gjennom navn og kommentarer
+- [x] Rydde opp i `BasePath` etter at konfigurasjonen er lest
+
+_Publisering_
+- [x] Bruke `BasePath` i alle lenker i malene
+- [x] Arbeidsflyt i GitHub Actions som bygger og publiserer
+- [x] Slå på GitHub Pages med Actions som kilde
