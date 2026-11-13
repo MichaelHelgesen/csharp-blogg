@@ -34,46 +34,31 @@ namespace CsharpBlogg.Generator.Services
                     TemplateLoader = templateLoader
                 };
 
+                // 3. Legg til globale variabler som kan brukes i malene
                 var scriptObject = new ScriptObject
                 {
-                    { "basepath", siteConfig.BasePath },
-                    { "content", contentItem.Html }
+                    { "basepath", siteConfig.BasePath }, // Bane for å finne maler definert med include.
+                    { "content", contentItem.Html } // Innhold fra markdown-filen
                 };
+
                 context.PushGlobal(scriptObject);
 
                 // Finn og les default.html fra templates/general
                 var defaultTemplate = new DirectoryInfo(siteConfig.TemplatesPath).GetFiles("general/default.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
-                //var headerTemplate = new DirectoryInfo(siteConfig.TemplatesPath).GetFiles("general/header.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
-                //var footerTemplate = new DirectoryInfo(siteConfig.TemplatesPath).GetFiles("general/footer.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
                 if (defaultTemplate != null)
                 {
-                    /*
-                    string footer = File.ReadAllText(footerTemplate.FullName);
-                    var footerTemplateParsed = Template.Parse(footer);
-                    var footerRendered = footerTemplateParsed.Render(new { basepath = siteConfig.BasePath });   
-
-                    string header = File.ReadAllText(headerTemplate.FullName);
-                    var headerTemplateParsed = Template.Parse(header);
-                    var headerRendered = headerTemplateParsed.Render(new { basepath = siteConfig.BasePath });
-                    */
-                    string content = File.ReadAllText(defaultTemplate.FullName);
-                    var template = Template.Parse(content);
-                    html += template.Render(context);
+                    string content = File.ReadAllText(defaultTemplate.FullName); // Les innholdet i malen
+                    var template = Template.Parse(content); // Parse innholdet til en Scriban-mal
+                    html += template.Render(context); // Render malen med konteksten som inneholder variablene
                 }
                 
-                //html += Markdown.ToHtml($"# {contentItem.Title}", markdownPipeline); // Tittel fra YAML
-
                 if (contentItem.GetType().Name == "Page")
                 {
                     var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
                     if (posts != null && posts.Count > 0)
                     {
-                        var index = Directory.EnumerateFiles(
-                        siteConfig.TemplatesPath,
-                        "index.html",
-                        new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }
-                    ).FirstOrDefault();
-                        string content2 = File.ReadAllText(index);
+                        var index = new DirectoryInfo(siteConfig.TemplatesPath).GetFiles("index.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();
+                        string content2 = File.ReadAllText(index.FullName);
                         var templateTEst2 = Template.Parse(content2);
                         var result = templateTEst2.Render(new { posts });
                         html += result;
@@ -87,9 +72,8 @@ namespace CsharpBlogg.Generator.Services
                 }
                 //html += contentItem.Html; // Innhold fra markdown-filen
                 contentItem.Html = html;
-                // Skriv til HTML
-                File.WriteAllText(Path.Combine(siteConfig.OutputPath, Path.ChangeExtension(contentItem.Slug ?? contentItem.Filename, "html")), contentItem.Html);
-                Console.WriteLine($"File {contentItem.Title} generated, with slug: {contentItem.Slug}");
+                
+                SaveFiles.SaveFilesToDisk(siteConfig, contentItem);
                 }
             }
         }

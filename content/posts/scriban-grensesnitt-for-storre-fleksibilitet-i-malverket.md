@@ -268,7 +268,7 @@ Deretter finner jeg hovedmalen `default.html`, leser innholdet, parser det og re
 
 Da vil alle `include`-direktivene i malen automatisk bruke `MyIncludeFromDisk` til å laste inn de nødvendige malene.
 
-## Annet lært i denne omgangen
+## Annet jeg har lært og gjort i denne omgangen
 
 ### Rydding
 
@@ -312,11 +312,12 @@ Etter tenkning og dialog med meg selv, har jeg kommet frem til følgende priorit
 3. Dersom ikke match i punkt 2 bruk typemalen, så side får malen i for eksempel `/pages/_default.html`, og innlegg: `/post/_default.html` (prefiks for å unngå ev. treff mot filnavn).
 4. Dersom ingen match på type-folder, bruk den mest grunnleggende malen i `/general`.
 
-### Annet jeg har lært i prosessen:
+### Diverse
 
 - Lærte at `return` kan brukes med 1 for feil, og 0 for suksess.
 - La inn mer inline stil.
 - Flyttet ContentConverter metoden til egen fil under `/Services`.
+- Flyttet lagring av filer til egen SaveFiles-metode i egen fil under `/Services`.
 - Det er øverste nivå i koden som skal ta seg av feilbeskjeder og stoppingen av programmet. Metodene skal helst ikke stoppe programmet:
 
 ```csharp
