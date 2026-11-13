@@ -3,7 +3,7 @@ using CsharpBlogg.Generator.Models;
 
 namespace CsharpBlogg.Generator.Services
 {
-    internal class FolderSetup
+    internal static class FolderSetup
     {
         internal static void RunFolderSetup(SiteConfig siteConfig)
         {

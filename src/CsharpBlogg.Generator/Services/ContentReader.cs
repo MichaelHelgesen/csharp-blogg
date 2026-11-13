@@ -7,7 +7,7 @@ using Markdig.Extensions.Yaml;
 using YamlDotNet.Serialization;
 namespace CsharpBlogg.Generator.Services
 {
-    internal class ContentReader
+    internal static class ContentReader
     {
         public static List<T> LoadContent<T>(string contentFolder) where T : ContentItem, new()
         {

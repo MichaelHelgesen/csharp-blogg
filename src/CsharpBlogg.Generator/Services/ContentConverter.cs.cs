@@ -5,7 +5,7 @@ using Scriban.Runtime;
 
 namespace CsharpBlogg.Generator.Services
 {
-    internal class ContentConverter
+    internal static class ContentConverter
     {
         internal static void WriteContentToHtml<T>(SiteConfig siteConfig, List<T> contentItems) where T : ContentItem
         {
