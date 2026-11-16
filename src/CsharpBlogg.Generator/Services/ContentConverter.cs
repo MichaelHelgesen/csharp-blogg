@@ -37,10 +37,12 @@ namespace CsharpBlogg.Generator.Services
                     }
                     else // Hvis ikke, sjekk om default.html finnes i templates/<contentType>/default.html
                     {
-                        var file2 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), "default.html").FirstOrDefault();
-                        Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file2} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html")}");
-                        if (file2 != null) // Hvis default.html finnes i templates/<contentType>/default.html, bruk den.
+                        var pathCheck = Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html");
+                        //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file2} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html")}");
+                        if (pathCheck != null) // Hvis default.html finnes i templates/<contentType>/default.html, bruk den.
                         {
+                            var file2 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), "default.html").FirstOrDefault();
+
                             contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), "default.html");
                         }
                         else // Hvis ikke, bruk templates/general/default.html
