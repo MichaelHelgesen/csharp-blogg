@@ -29,21 +29,21 @@ namespace CsharpBlogg.Generator.Services
                 // Definer template for innholdet, enten fra YAML eller default.
                 if (string.IsNullOrEmpty(contentItem.Template)) // Hvis YAML er tomt
                 {
-                    var pathcheck = Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html");
+                    var pathcheck = File.Exists(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html"));
                     //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html")}");
-                    if (pathcheck != null) // Hvis template finnes i templates/<contentType>/<filename>.html, bruk den.
+                    if (pathcheck) // Hvis template finnes i templates/<contentType>/<filename>.html, bruk den.
                     {
-                        var file = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Filename + ".html").FirstOrDefault();
+                        //var file = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Filename + ".html").FirstOrDefault();
 
                         contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html");
                     }
                     else // Hvis ikke, sjekk om default.html finnes i templates/<contentType>/default.html
                     {
-                        var pathCheck = Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html");
+                        var pathCheck = File.Exists(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html"));
                         //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file2} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html")}");
-                        if (pathCheck != null) // Hvis default.html finnes i templates/<contentType>/default.html, bruk den.
+                        if (pathCheck) // Hvis default.html finnes i templates/<contentType>/default.html, bruk den.
                         {
-                            var file2 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), "default.html").FirstOrDefault();
+                           // var file2 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), "default.html").FirstOrDefault();
 
                             contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), "default.html");
                         }
