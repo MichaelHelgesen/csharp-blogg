@@ -29,10 +29,12 @@ namespace CsharpBlogg.Generator.Services
                 // Definer template for innholdet, enten fra YAML eller default.
                 if (string.IsNullOrEmpty(contentItem.Template)) // Hvis YAML er tomt
                 {
-                    var file = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Filename + ".html").FirstOrDefault();
+                    var pathcheck = Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html");
                     //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html")}");
-                    if (file != null) // Hvis template finnes i templates/<contentType>/<filename>.html, bruk den.
+                    if (pathcheck != null) // Hvis template finnes i templates/<contentType>/<filename>.html, bruk den.
                     {
+                        var file = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Filename + ".html").FirstOrDefault();
+
                         contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html");
                     }
                     else // Hvis ikke, sjekk om default.html finnes i templates/<contentType>/default.html
