@@ -5,5 +5,5 @@
   "PagesFolder": "pages",
   "TemplatesPath": "templates",
   "SiteUrl": "",
-  "BasePath": "csharp-blogg"
+  "BasePath": "/csharp-blogg"
 }
