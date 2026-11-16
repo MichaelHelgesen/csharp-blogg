@@ -14,7 +14,8 @@ public class SiteConfig
     public string PostFolderPath => Path.Combine(ContentPath, PostFolder);
     public string PageFolderPath => Path.Combine(ContentPath, PageFolder);
 
-    public static SiteConfig Load()
+
+public static SiteConfig Load()
     {
         var jsonConfigFilePath = "siteconfig.json"; // Banen til konfigurasjonsfilen
         var siteConfig = new SiteConfig();

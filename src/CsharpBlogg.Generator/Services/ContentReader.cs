@@ -1,6 +1,5 @@
 ﻿
 using CsharpBlogg.Generator.Models;
-using CsharpBlogg.Generator.Utilities;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Extensions.Yaml;
@@ -11,6 +10,7 @@ namespace CsharpBlogg.Generator.Services
     {
         public static List<T> LoadContent<T>(string contentFolder) where T : ContentItem, new()
         {
+
             var markdownPipeline = new MarkdownPipelineBuilder()
                 .UseYamlFrontMatter() // Hente ut YAML
                 .Build(); // Bygge rørgaten.
@@ -20,17 +20,18 @@ namespace CsharpBlogg.Generator.Services
                 .IgnoreUnmatchedProperties() // Ignorere manglende felter i klassen som matches mot
                 .Build();
 
-
             //string contentFolder = typeof(T).Name.ToLower() + "s"; // Hvilken type innhold er det? Page eller Post?
 
             var files = new DirectoryInfo(contentFolder).GetFiles("*.md", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive });
+
+            
             if (files.Length == 0)
             {
-                Console.WriteLine($"No markdown files found in source folder: {contentFolder}");
+               // Console.WriteLine($"No markdown files found in source folder: {contentFolder}");
                 return new List<T>();
             }
 
-            List<T> Content = []; // Liste med innhold som skal returneres
+            List<T> content = []; // Liste med innhold som skal returneres
 
             foreach (var file in files)
             {
@@ -38,46 +39,51 @@ namespace CsharpBlogg.Generator.Services
                 {
                     var fileAsString = File.ReadAllText(file.FullName); // Leser filen
 
+                    var parentDirectory = Directory.GetParent(file.FullName);
+
                     var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
 
                     var contentItem = new T();
 
-                    Console.WriteLine($"{file.Name} read successfully. Parsing YAML and Markdown...{contentItem.Filename}");
                     var yamlBlock = markdownTree.Descendants<YamlFrontMatterBlock>().FirstOrDefault(); // Henter YAML-blokken, hvis den finnes.
+                    
                     if (yamlBlock != null)
                     {
                         var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
-                        contentItem = yamlDeserializer.Deserialize<T>(yaml) ?? contentItem; // Instansierer et Post-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
-                    }
-
-                    contentItem.Filename = file.Name.Split(".")[0];
-                    contentItem.Created = file.CreationTimeUtc; // Markdown-filens opprettelsesdato settes som default for innholdets opprettelsesdato.
-
-  
-                    contentItem.Html = Markdown.ToHtml(markdownTree, markdownPipeline); // Markdown-tekst til HTML
-
-                    if (contentItem.Slug == null || contentItem.Slug == "")
-                    {
-                        string filenameAsSlug = Slug.SlugConverter(contentItem.Filename);
-                        Console.WriteLine($"Slug not specified in YAML for {contentItem.Filename}. Using filename as slug: {filenameAsSlug}");
-                        if (filenameAsSlug == "" || filenameAsSlug == null)
-                        {
-                            Console.WriteLine($"Filename {contentItem.Filename} with title {contentItem.Title} could not be converted to a slug. Skipping this file.");
-                            continue; // Hvis filnavnet ikke kan konverteres til en slug, hopp over denne filen.
-                        }
-                        contentItem.Slug = filenameAsSlug;
+                        contentItem = yamlDeserializer.Deserialize<T>(yaml) ?? contentItem; // Instansierer et ContentItem-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
+                        //contentItem.Markdown = (string?)fileAsString.Slice(yamlBlock.Span.End, fileAsString.Length - yamlBlock.Span.End); // Markdown-tekst til HTML
+                        contentItem.MarkdownBody = fileAsString[(yamlBlock.Span.End +1)..]; // Markdown uten YAML.
                     }
                     else
                     {
-                        contentItem.Slug = Slug.SlugConverter(contentItem.Slug); // Kjør SlugConverter på slug som er angitt i YAML, for å sikre at den er gyldig.
+                        contentItem.MarkdownBody = fileAsString; // Hvis ingen YAML, sett hele filen som Markdown.
                     }
 
+                    contentItem.Filename = file.Name.Split(".")[0];
+                    contentItem.Created = file.CreationTimeUtc; // TODO: Markdown-filens opprettelsesdato settes som default for innholdets opprettelsesdato.
+                    
                     if (contentItem.MetaTitle == null || contentItem.MetaTitle == "")
                     {
                         contentItem.MetaTitle = contentItem.Title;
                     }
 
-                    Content.Add(contentItem);
+                    contentItem.SetSlug(); // Setter slug, enten fra YAML eller fra filnavnet.)
+
+                    if (string.IsNullOrEmpty(contentItem.Slug))
+                    {
+                       // Console.WriteLine($"Filename {file.Name} with title {contentItem.Title} could not be converted to a slug. Skipping this file.");
+                        continue; // Hvis filnavnet ikke kan konverteres til en slug, hopp over denne filen.
+                    }
+
+                    contentItem.FilePath = file.FullName; // Setter filbanen til innholdet.
+
+                    //contentItem.DefineTemplate(parentDirectory); // Setter template, enten fra YAML eller default.
+
+                    contentItem.Normalize(); // Normaliserer innholdet, f.eks. gjør alle tags til små bokstaver.
+
+                    
+
+                    content.Add(contentItem);
                 }
                 catch (IOException ex)
                 {
@@ -95,7 +101,7 @@ namespace CsharpBlogg.Generator.Services
                 }
 
             }
-            return Content;
+            return content;
         }
     }
 }

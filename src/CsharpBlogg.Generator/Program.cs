@@ -18,13 +18,9 @@ FolderSetup.RunFolderSetup(siteConfig); // Sjekk at mappene finnes og er tilgjen
 var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
 var pages = ContentReader.LoadContent<Page>(siteConfig.PageFolderPath);
 
-ContentConverter.WriteContentToHtml(siteConfig, posts);
-ContentConverter.WriteContentToHtml(siteConfig, pages);
+var siteContent = new SiteContent(siteConfig, posts, pages);
+
+ContentConverter.WriteContentToHtml(siteContent);
 
 return 0;
-
-// Last konfigurasjon / setup
-// Les innhold 
-// Lag HTML av innhold og maler
-// Skriv HTML-filer til output-mappen
 

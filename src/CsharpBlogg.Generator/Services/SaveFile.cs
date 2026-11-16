@@ -2,7 +2,7 @@
 
 namespace CsharpBlogg.Generator.Services
 {
-    internal static class SaveFiles
+    internal static class SaveFile
     {
         internal static void SaveFilesToDisk<T>(SiteConfig siteConfig, T contentItem) where T : ContentItem
         {

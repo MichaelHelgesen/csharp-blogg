@@ -9,4 +9,5 @@ public class Post : ContentItem
         base.Normalize();
         Tags = Tags.Select(tag => tag.ToLowerInvariant()).ToList(); // Gjør alle tags til små bokstaver
     }
+
 }

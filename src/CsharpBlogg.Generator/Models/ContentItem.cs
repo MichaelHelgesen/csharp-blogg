@@ -1,4 +1,7 @@
+using CsharpBlogg.Generator.Utilities;
+using Scriban.Syntax;
 namespace CsharpBlogg.Generator.Models;
+
 
 public abstract class ContentItem // Abstrakt: kan ikke instansieres direkte, men kan brukes som baseklasse for andre klasser.
 {
@@ -10,12 +13,28 @@ public abstract class ContentItem // Abstrakt: kan ikke instansieres direkte, me
     public DateTime? Updated { get; set; }
     public DateTime? Created { get; set; }
     public bool Draft { get; set; } = true;
-    public string? Html { get; set; }
+    public string? Html { get; set; } = string.Empty;
+    public string? MarkdownBody { get; set; } = string.Empty;
     public string Filename { get; set; } = string.Empty;
+    public string FilePath { get; set; } = string.Empty;   
     public string Template { get; set; } = string.Empty;
 
     public virtual void Normalize() // Virtuel metode: kan overstyres i avledede klasser.
     {
         
+    }
+
+    public void SetSlug()
+    {
+        if (string.IsNullOrEmpty(Slug))
+        {
+            string filenameAsSlug = SlugGenerator.Slug(Filename);
+            Console.WriteLine($"Slug not specified in YAML for {Filename}. Using filename as slug: {filenameAsSlug}");
+            Slug = filenameAsSlug;
+        }
+        else
+        {
+            Slug = SlugGenerator.Slug(Slug); // Kjør SlugConverter på slug som er angitt i YAML, for å sikre at den er gyldig.
+        }
     }
 }

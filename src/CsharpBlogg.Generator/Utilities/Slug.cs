@@ -2,9 +2,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 namespace CsharpBlogg.Generator.Utilities;
 
-public static class Slug
+public static class SlugGenerator
 {
-    public static string SlugConverter(string title)
+    public static string Slug(string title)
     {
         string titleCopy = title
                 .ToLowerInvariant()
