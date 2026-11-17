@@ -87,6 +87,7 @@ namespace CsharpBlogg.Generator.Services
                 {
                     { "basepath", siteContent.SiteConfig.BasePath }, // Bane for index.
                     { "main", contentItem.Html }, // Innhold fra markdown-filen
+                    { "title", siteContent.SiteConfig.Title }, // Tittel for innholdet
                     { "sitecontent", siteContent }
                 };
 

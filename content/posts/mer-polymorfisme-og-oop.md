@@ -8,7 +8,7 @@ tags: [csharp, SSG-prosjekt]
 
 ## Innkapsling av data ("encapsulation")
 
-Jeg startet økten med å gruble over hvordan jeg skulle få tak i alle behandlede poster og sider i den generiske metoden `ContentConverter`for å konvertere innholdet til HTML-filer.
+Jeg startet økten med å gruble over hvordan jeg skulle få tak i alle behandlede poster og sider i den generiske metoden `ContentConverter` for å konvertere innholdet til HTML-filer.
 
 Problemet mitt var at jeg kalte `ContentReader` for å hente postene derson den gjeldende `contentItem` var en `Page`. 
 

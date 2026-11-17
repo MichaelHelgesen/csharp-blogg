@@ -9,6 +9,7 @@ public class SiteConfig
     public string PostFolder { get; set; } = "posts";
     public string PageFolder { get; set; } = "pages";
     public string TemplatesPath { get; set; } = "templates";
+    public string Title { get; set; } = "My Blog";
     public string SiteUrl { get; set; } = string.Empty;
     public string BasePath { get; set; } = string.Empty;
     public string PostFolderPath => Path.Combine(ContentPath, PostFolder);
