@@ -1,8 +1,8 @@
 ﻿using CsharpBlogg.Generator.Models;
 using Markdig;
+using Markdown.ColorCode;
 using Scriban;
 using Scriban.Runtime;
-using Scriban.Syntax;
 
 namespace CsharpBlogg.Generator.Services
 {
@@ -19,6 +19,8 @@ namespace CsharpBlogg.Generator.Services
                 //
                 var markdownPipeline = new MarkdownPipelineBuilder()
                     .UseYamlFrontMatter() // Hente ut YAML. Trengs ikke her?
+                    .UseAdvancedExtensions()
+                    .UseColorCode()
                     .Build(); // Bygge rørgaten.
 
 
@@ -78,7 +80,7 @@ namespace CsharpBlogg.Generator.Services
                     };
 
 
-                contentItem.Html = Markdown.ToHtml(contentItem.MarkdownBody ?? string.Empty, markdownPipeline); // Konverterer markdown til HTML
+                contentItem.Html = Markdig.Markdown.ToHtml(contentItem.MarkdownBody ?? string.Empty, markdownPipeline); // Konverterer markdown til HTML
 
                 // 3. Legg til globale variabler som kan brukes i malene
                 var scriptObject = new ScriptObject

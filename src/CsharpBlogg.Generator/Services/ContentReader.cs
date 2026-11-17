@@ -41,7 +41,7 @@ namespace CsharpBlogg.Generator.Services
 
                     var parentDirectory = Directory.GetParent(file.FullName);
 
-                    var markdownTree = Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
+                    var markdownTree = Markdig.Markdown.Parse(fileAsString, markdownPipeline); // Deler inn dokumentet i YAML og MD.
 
                     var contentItem = new T();
 
