@@ -1,6 +1,6 @@
 ﻿---
 title: Mer om polymorfisme og objektorientert programmering
-dato: 2026-11-17
+published: 2026-11-17
 tags: [csharp, SSG-prosjekt]
 ---
 
