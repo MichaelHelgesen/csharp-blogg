@@ -14,6 +14,7 @@ catch (Exception e)
 }
 
 FolderSetup.RunFolderSetup(siteConfig); // Sjekk at mappene finnes og er tilgjengelige.
+FolderSetup.CopyDirectory(siteConfig.ResourceFolder, Path.Combine(siteConfig.OutputPath, siteConfig.ResourceFolder), overwrite: true); // Kopier ressurser til output-mappen
 
 var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
 var pages = ContentReader.LoadContent<Page>(siteConfig.PageFolderPath);
@@ -21,6 +22,8 @@ var pages = ContentReader.LoadContent<Page>(siteConfig.PageFolderPath);
 var siteContent = new SiteContent(siteConfig, posts, pages);
 
 ContentConverter.WriteContentToHtml(siteContent);
+
+
 
 return 0;
 

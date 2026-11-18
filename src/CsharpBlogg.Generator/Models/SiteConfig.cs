@@ -8,6 +8,7 @@ public class SiteConfig
     public string OutputPath { get; set; } = "output";
     public string PostFolder { get; set; } = "posts";
     public string PageFolder { get; set; } = "pages";
+    public string ResourceFolder { get; set; } = "resources";
     public string TemplatesPath { get; set; } = "templates";
     public string Title { get; set; } = "My Blog";
     public string SiteUrl { get; set; } = string.Empty;

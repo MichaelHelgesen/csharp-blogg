@@ -1,0 +1,43 @@
+/* RESET */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+/* RESET END */
+
+
+html {
+	background-color: #f0f0f0; 
+	color: #333; 
+	font-family: Arial, sans-serif; 
+	font-size: 1rem;
+}
+
+pre {
+	border: 1px solid #ddd;
+	padding: 1rem;
+	overflow-x: auto;
+	border-radius: 6px;
+	padding: 1rem;
+}

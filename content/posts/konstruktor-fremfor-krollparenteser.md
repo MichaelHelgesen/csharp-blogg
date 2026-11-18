@@ -1,9 +1,17 @@
 ---
-title: s
+title: Konstruktør vs objektinitialiserer
+published: 2026-11-17
+tags: [csharp, SSG-prosjekt]
 ---
+**I dag lærte jeg om konstruktører, og hvorfor de er bedre enn objektinitialisering.**
 
-Greit å gjøre det på denne måten når det kommer til å lage en liste over tags?, Eller kan AllTags like godt ligge direkte på felter, for å unngå å måtte kalle en metode som dette?
+I forrige innlegg laget jeg en `SiteContent`-klasse som speiler nettssidens innhold og struktur. Den ble laget med tomme felter for `SiteConfig` , poster, sider, og ikke minst tag-er.
 
+Nederst i klassen laget jeg en metode `SetTags()` som skulle gå gjennom alle postene og hente ut alle unike tag-er, og legge dem i `AllTags`-feltet. 
+
+Det fungerte, men det krevde at jeg først måtte opprette objektet, importere alle postene og sidene, og så kalle `SetTags()` for å fylle ut tag-listen. Da fikk jeg samme magefølelse som omtalt i forrige innlegg. Det føltes feil:
+
+```csharp
 var siteContent = new SiteContent
 {
     SiteConfig = siteConfig,
@@ -12,36 +20,59 @@ var siteContent = new SiteContent
 };
 
 siteContent.SetTags();
+```
 
-Du har allerede møtt dette spørsmålet to ganger, i to ulike forkledninger. Se om du kjenner det igjen:
+Her er det egentlig tre ting som skjer. Det første er at objektet instansieres, det andre er at postene og sidene settes inn, og det tredje er at tag-listen fylles ut. Og alt er avhengig av at det skjer i riktig rekkefølge. Det er skjør kode, og kalles "temporal coupling": 
 
-«Når er objektet ferdig?» Mellom opprettelsen og SetTags() finnes det et SiteContent med innlegg, men uten tags. Ingenting hindrer deg i å glemme kallet, eller i å bruke objektet før det skjer. Koden ser riktig ut, men malen viser en tom tag-liste, og ingen feilmelding forteller deg hvorfor. Det kalles ofte temporal coupling: koden virker bare hvis ting skjer i riktig rekkefølge, men ingenting tvinger fram den rekkefølgen.
+> Temporal coupling
+> Kode som krever en bestemt rekkefølge for å fungere, men som ikke tvinger frem den rekkefølgen. Et objekt bør ideelt sett være ferdig når det instansieres.
 
-PostFolderPath. Der lagde du en property som regner ut verdien fra andre verdier. Tags er det samme: de er avledet fra innleggene. Så hvorfor skal de lagres separat?
+I dette tilfelleter er det lett å glemme å kalle `SetTags()`, injisere poster eller sider eller jeg kan komme til å bruke objektet før det er ferdig. Koden ser da riktig ut, men nettsiden viser en tom tag-liste, og ingen feilmelding forteller hvorfor.
 
-Så du har tre alternativer:
+Jeg lærte jo nylig om "information expert"-prinsippet, og det er nettopp det som gjelder her. Poster, sider og tag-er hører hjemme i `SiteContent`, og alt som har med dette innholdet å gjøre, bør også helst håndteres der.
 
-Metodekall etterpå, som nå. Enkelt, men mulig å glemme.
-En beregnet property, som PostFolderPath. Alltid i samsvar med innleggene, og umulig å glemme. Til gjengjeld regnes den ut på nytt hver gang den leses. Hvor mange ganger tror du malene vil lese den i et bygg, og hvor mange innlegg har du? Er det et reelt problem?
-Regnes ut én gang når objektet lages. Krever at innleggene er på plass da. Hva i C# kjører garantert når et objekt opprettes?
+Derfor er det bedre å garantere at disse elementene er på plass i det øyeblikket objektet opprettes, og det gjøres med en konstruktør. Den må ha samme navn som klassen, og defineres med de parameterne som trengs for å lage objektet. I dette tilfellet er det `SiteConfig`, poster og sider:
 
-Et kontrollspørsmål som skiller 2 og 3: hvis noen endrer Posts etter at objektet er laget, hvilket av alternativene gir da feil tags?
+```csharp
+public SiteContent(SiteConfig siteConfig, List<Post> posts, List<Page> pages)
+{
+    SiteConfig = siteConfig;
+    Posts = posts;
+    Pages = pages;
+}
+```
 
-For magefølelsen hadde jeg rett angående 1. Det blir feil.
+Det som er ekstra smart, er at jeg i denne konstruktøren kan fylle ut tag-listen samtidig! Dermed slipper jeg å lage og kalle en egen metode til dette formålet:
 
-Hvis jeg har mange poster, vil den jo kjøre unødvenig mange ganger tenker jeg.
-Etter min tanke den beste. Dette er en SSG, så siden må bygges når nye innlegg er lagt til, noe som garanterer korrekt liste, så lenge den kjører etter at post-listen er laget.
+```csharp
+public SiteContent(SiteConfig siteConfig, List<Post> posts, List<Page> pages)
+{
+    SiteConfig = siteConfig;
+    Posts = posts;
+    Pages = pages;
+    AllTags = [.. posts.SelectMany(p => p.Tags).Distinct()];
+}
+```
 
-Enig, 3 passer godt. Og legg merke til at betingelsen du selv satt, «så lenge den kjører etter at postlisten er laget», er nettopp det en konstruktør kan garantere, i stedet for at du må huske det.
+Poster og sider tvinges jo inn via konstruktøren, så på denne måten er det umulig å glemme å fylle ut tag-listen. Den blir alltid korrekt. 
 
-Men her ligger en felle det er verdt å teste selv. Se på hvordan du lager objektet i dag:
+Initialiseringen av `SiteContent`-objektet blir da mye enklere, Jeg slipper å kalle en egen metode, samt å injisere poster og sider med krøllparenteser, som kalles objektinitialisering.
 
-new SiteContent { SiteConfig = ..., Posts = ..., Pages = ... }
+```csharp
+/* Gammel metode med objektinitialisering
+// og kall til SetTags() som må gjøres i riktig rekkefølge.
+var siteContent = new SiteContent
+{
+    SiteConfig = siteConfig,
+    Posts = posts,
+    Pages = pages
+};
 
-Krøllparentesene kalles en objektinitialiserer. Spørsmålet er: kjører konstruktøren før eller etter at verdiene i krøllparentesene settes? Svaret avgjør om konstruktøren i det hele tatt ser innleggene. Prøv det. Skriv ut antallet innlegg inne i konstruktøren og se hva du får.
+siteContent.SetTags();
+*/
 
-Svaret peker deg mot hvordan innleggene må komme inn hvis konstruktøren skal kunne bruke dem.
+// Ny metode
+var siteContent = new SiteContent(siteConfig, posts, pages);
+```
 
-Og så det siste hullet: hvis Posts fortsatt har en offentlig set, kan noen bytte ut listen etter at tags er regnet ut. Da er du tilbake til feil tags. Husker du init og private set fra tidligere? Her har du et konkret grunnlag for å bruke dem.
-
-En liten justering til punkt 2: antall utregninger avhenger egentlig av hvor mange ganger malene leser tags, ikke direkte av antall innlegg. Men konklusjonen din står: hvorfor regne ut det samme mange ganger når svaret aldri endrer seg i løpet av et bygg?
+Alt i alt mindre og bedre kode!
