@@ -17,7 +17,7 @@ Problemet mitt var at jeg kalte `ContentReader` for å hente postene derson den 
 
 if (contentItem.GetType().Name == "Page")
 {
-    var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
+  var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
 
 //...
 ```
@@ -122,17 +122,17 @@ Hvis Klasse A (`ContentItem`) har dataene, bør ikke Klasse B (`ContentReader`) 
 
 Klasse A er "informasjonseksperten" og bør gjøre beregningen selv.
 
-### Spread fremfor Slice
+### Range fremfor Slice
 
 Jeg hadde tidligere brukt `Slice` for å hente ut Markdown-teksten fra filen, men det er ikke nødvendig. 
 
-Jeg kan bruke "spread" i stedet, som er mer lesbart og enklere å forstå:
+Jeg kan bruke "range" i stedet, som er mer lesbart og enklere å forstå:
 
 ```csharp
 // Slice
 //contentItem.Markdown = (string?)fileAsString.Slice(yamlBlock.Span.End, fileAsString.Length - yamlBlock.Span.End);
 
-// Spread
+// Range
 contentItem.MarkdownBody = fileAsString[(yamlBlock.Span.End + 1)..]; // Markdown uten YAML.
 ```
 

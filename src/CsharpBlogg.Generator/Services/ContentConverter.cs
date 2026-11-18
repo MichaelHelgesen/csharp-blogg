@@ -19,7 +19,7 @@ namespace CsharpBlogg.Generator.Services
                 //
                 var markdownPipeline = new MarkdownPipelineBuilder()
                     .UseYamlFrontMatter() // Hente ut YAML. Trengs ikke her?
-                    .UseAdvancedExtensions()
+                    //.UseAdvancedExtensions()
                     .UseColorCode()
                     .Build(); // Bygge rørgaten.
 
