@@ -17,7 +17,7 @@ Problemet mitt var at jeg kalte `ContentReader` for å hente postene derson den 
 
 if (contentItem.GetType().Name == "Page")
 {
-  var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
+    var posts = ContentReader.LoadContent<Post>(siteConfig.PostFolderPath);
 
 //...
 ```

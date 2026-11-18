@@ -11,8 +11,16 @@ namespace CsharpBlogg.Generator.Services
         internal static void WriteContentToHtml(SiteContent siteContent)
         {
 
-            foreach (var contentItem in siteContent.PostsAndPages)
+            foreach (var contentItem in siteContent.PublishedSlugs)
             {
+                Console.WriteLine($"Converting {contentItem.Filename} to HTML...");
+                /*
+                if (contentItem.Published == null || contentItem.Published > DateTime.Now || string.IsNullOrEmpty(contentItem.Slug) || contentItem.Draft)
+                {
+                    Console.WriteLine($"Error: Content item {contentItem.Filename} is not published or is a draft or has an empty slug. Skipping this file.");
+                    continue; // Hvis HTML-innholdet er tomt, hopp over denne filen.
+                }
+                */
 
                 //
                 // TODO: Flytt markdownPipeline til globalt sted, slik at det ikke må gjøres for hver fil?
@@ -119,7 +127,7 @@ namespace CsharpBlogg.Generator.Services
                     //html += contentItem.Html; // Innhold fra markdown-filen
                     contentItem.Html = html;
                     //Console.WriteLine(contentItem.Html);
-
+                    
                     SaveFile.SaveFilesToDisk(siteContent.SiteConfig, contentItem);
                 }
 

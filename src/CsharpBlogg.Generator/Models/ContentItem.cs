@@ -12,7 +12,7 @@ public abstract class ContentItem // Abstrakt: kan ikke instansieres direkte, me
     public DateTime? Published { get; set; }
     public DateTime? Updated { get; set; }
     public DateTime? Created { get; set; }
-    public bool Draft { get; set; } = true;
+    public bool Draft { get; set; } = false;
     public string? Html { get; set; } = string.Empty;
     public string? MarkdownBody { get; set; } = string.Empty;
     public string Filename { get; set; } = string.Empty;

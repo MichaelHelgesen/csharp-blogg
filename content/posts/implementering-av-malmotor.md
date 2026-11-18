@@ -2,7 +2,7 @@
 published: 2026-11-09
 title: Implementering av malmotor
 tags: ["csharp", "ssg-prosjekt", "scriban"]
-draft: true
+draft: false
 ---
 
 **For å koble sammen innhold og design trenger jeg å implementere en malmotor. Å utvikle det selv er for avansert for meg på mitt nåværende nivå, så valget falt på [Scriban](https://scriban.github.io/).**
