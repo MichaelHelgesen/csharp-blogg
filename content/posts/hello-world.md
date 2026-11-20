@@ -109,6 +109,10 @@ FileInfo[] GetFiles(string path, string pattern, EnumerationOptions options)
 }
 ```
 
+Her er resultatet:
+
+{{ figure "hello-world.png" "Min første HTML-side basert på Markdown" }}
+
 Allerede her var det mye å lære.
 
 - Hente filer med `GetFiles`.

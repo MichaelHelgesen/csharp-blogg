@@ -88,18 +88,67 @@ namespace CsharpBlogg.Generator.Services
                     };
 
 
-                contentItem.Html = Markdig.Markdown.ToHtml(contentItem.MarkdownBody ?? string.Empty, markdownPipeline); // Konverterer markdown til HTML
+                //contentItem.Html = Markdig.Markdown.ToHtml(contentItem.MarkdownBody ?? string.Empty, markdownPipeline); // Konverterer markdown til HTML
 
                 // 3. Legg til globale variabler som kan brukes i malene
                 var scriptObject = new ScriptObject
                 {
                     { "basepath", siteContent.SiteConfig.BasePath }, // Bane for index.
-                    { "main", contentItem.Html }, // Innhold fra markdown-filen
+                    //{ "main", contentItem.Html }, // Innhold fra markdown-filen
                     { "title", siteContent.SiteConfig.Title }, // Tittel for innholdet
                     { "sitecontent", siteContent }
                 };
 
+                
+
                 context.PushGlobal(scriptObject);
+
+                var shortcodesDir = Path.Combine(siteContent.SiteConfig.TemplatesPath, "partials");
+                if (Directory.Exists(shortcodesDir))
+                {
+                    foreach (var file in Directory.GetFiles(shortcodesDir, "*.html"))
+                    {
+                        var funcName = Path.GetFileNameWithoutExtension(file);
+                        var htmlContent = File.ReadAllText(file);
+
+                        // Merk {{ ... }} rundt selve funksjonsdefinisjonen og capture!
+                        var wrapper = $$$"""
+            {{ func {{{funcName}}}(a0 = null, a1 = null, a2 = null, a3 = null, a4 = null, a5 = null)
+               $0 = a0; $1 = a1; $2 = a2; $3 = a3; $4 = a4; $5 = a5
+               capture __sc_out }}
+            {{{htmlContent}}}
+            {{ end
+               ret __sc_out
+            end }}
+            """;
+
+                        var funcTemplate = Template.Parse(wrapper);
+                        if (funcTemplate.HasErrors)
+                        {
+                            throw new Exception($"Feil i shortcode '{file}': {string.Join(", ", funcTemplate.Messages)}");
+                        }
+                        funcTemplate.Evaluate(context);
+                    }
+                }
+
+                string markdownBody = contentItem.MarkdownBody ?? string.Empty;
+                if (!string.IsNullOrWhiteSpace(markdownBody))
+                {
+                    // Evaluer kun korte single-line tagger som {{ figure ... }} (ignorerer flerlinjes kodeeksempler og {{ for }})
+                    markdownBody = System.Text.RegularExpressions.Regex.Replace(
+                        markdownBody,
+                        @"^\{\{\s*(?!for\b|if\b|end\b|else\b|raw\b|endraw\b)([^\r\n\}]+)\}\}\s*$",
+                        match =>
+                        {
+                            var tpl = Template.Parse(match.Value);
+                            return tpl.HasErrors ? string.Empty : tpl.Render(context);
+                        },
+                        System.Text.RegularExpressions.RegexOptions.Multiline
+                    );
+                }
+
+                contentItem.Html = Markdig.Markdown.ToHtml(markdownBody, markdownPipeline);
+                scriptObject["main"] = contentItem.Html;
 
                 var baseTemplate = new DirectoryInfo(siteContent.SiteConfig.TemplatesPath)
                         .GetFiles("general/default.html", new EnumerationOptions { MatchCasing = MatchCasing.CaseInsensitive }).FirstOrDefault();

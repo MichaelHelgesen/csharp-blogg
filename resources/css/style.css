@@ -152,3 +152,32 @@ p {
 	font-weight: bold; 
 	font-size: inherit;
 }
+
+/* ARTICLE */
+/*
+article {
+  display: grid;
+  /* 3 kolonner: [venstre margin] [smal lesekolonne] [høyre margin] */
+  grid-template-columns: 
+    1fr 
+    min(65ch, 100% - 2rem) 
+    1fr;
+}
+*/
+/* Legg ALT innhold i den smale, sentrerte lesekolonnen som standard */
+/*
+article > * {
+  grid-column: 2;
+}
+*/
+/* La <pre> (og eventuelt store bilder) bryte ut til en bredere boks */
+/*
+article > div:has(pre) {
+  grid-column: 1 / -1; /* Spenner over alle kolonnene */
+  width: 100%;
+  max-width: 900px;    /* Maks bredde på kodeboksen */
+  margin: 1.5rem auto; /* Sentrerer kodeboksen */
+}
+*/
+*/
+/* END ARTICLE */

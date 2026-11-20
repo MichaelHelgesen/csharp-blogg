@@ -1,0 +1,9 @@
+{{- src = $0; caption = $1; alt = $2 ?? $1 -}}
+{{- if src -}}
+<figure>
+<img src="resources/img/{{ src }}" alt="{{ alt | html.escape }}" />
+{{- if caption }}
+<figcaption>{{ caption }}</figcaption>
+{{- end }}
+</figure>
+{{- end -}}
