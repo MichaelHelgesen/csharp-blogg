@@ -35,6 +35,15 @@ p, h1, h2, h3, h4, h5, h6 {
   --heading-weight: 700;
   --heading-color: #111827;
 
+  /* Fargeprofil */
+  --bg-primary: #F7F5F0;       /* Varmt, ubleket papir */
+  --bg-secondary: #ECE8DF;     /* Litt mørkere papir for kodeblokker og sitater */
+  --text-primary: #262522;     /* Myk koksgrå / skrivemaskinblekk */
+  --text-secondary: #5C5852;   /* Dempet gråbrun for datoer og metadata */
+  --accent-primary: #A63A2B;   /* Terrakotta for lenker og fokus */
+  --accent-secondary: #2B5B6C; /* Dyp blekkblå for underoverskrifter */
+  --border-color: #DCD6C8;     /* Diskré skillelinjer */
+
   /* Flytende skriftstørrelser (Min, Foretrukket, Maks) */
   --text-h1: clamp(2rem, 4vw + 1rem, 3rem);       /* 32px -> 48px */
   --text-h2: clamp(1.5rem, 3vw + 0.75rem, 2.25rem); /* 24px -> 36px */
@@ -101,8 +110,8 @@ h6 {
 
 
 html {
-	background-color: #f0f0f0; 
-	color: #333; 
+	background-color: var(--bg-primary); 
+	color: var(--text-primary); 
 	font-family: Arial, sans-serif; 
 	font-size: 1rem;
 }
@@ -114,8 +123,8 @@ body {
 }
 
 footer {
-	background-color: #999999; 
-	color: #333333; 
+	background-color: var(--bg-secondary); 
+	color: var(--text-secondary); 
 	font-size: 1rem; 
 	position: absolute; 
 	left: 0; 
@@ -127,7 +136,7 @@ footer {
 
 /* KODEBLOKKER */
 pre {
-	border: 1px solid #ddd;
+	border: 1px solid var(--border-color);
 	padding: 1rem;
 	overflow-x: auto;
 	border-radius: 6px;
@@ -140,7 +149,7 @@ p {
 }
 
 .message {
-	background-color: #c9ced2; 
+	background-color: var(--accent-primary); 
 	padding: 1rem; 
 	border-radius: 5px; 
 	margin-bottom: 1rem; 

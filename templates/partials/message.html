@@ -1,0 +1,7 @@
+﻿{{- title = $0; text = $1; bg = $2; color = $3 ?? $1 -}}
+{{- if title -}}
+<div class="message" style="background-color: {{- bg -}};">
+	<p style="color: {{- color -}}">{{- title -}}</p>
+	<p style="color: {{- color -}}">{{- text -}}</p>
+</div>
+{{- end -}}

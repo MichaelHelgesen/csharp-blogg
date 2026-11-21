@@ -7,12 +7,8 @@
 	<link rel="stylesheet" href="resources/css/style.css" />
 </head>
 <body>
-    {{ include "general/header.html" }}
-    <div class="message">
-			<p>Nettsiden under konstruksjon</p>
-			<p>Denne nettsiden utvikles som et privat prosjekt med formål å lære C#. Jeg blogger om prosessen og erfaringene jeg gjør underveis, i tillegg til andre ting som opptar meg.</p>
-			<p>Jeg er relativt ny i C# og OOP, så det vil utvilsomt være feil og misforståelser i både koden og tekstene om den.</p>
-	</div>
+	{{ include "general/header.html" }}
+	{{ message "Nettsiden under konstruksjon" "Denne nettsiden utvikles som et privat prosjekt med formål å lære C#. Jeg blogger om prosessen og erfaringene jeg gjør underveis, i tillegg til andre ting som opptar meg.<br/><br/> Jeg er relativt ny i C# og OOP, så det vil utvilsomt være feil og misforståelser i både koden og tekstene om den" "" "white" }}
 	<div class="main">
         {{~ main ~}}
     </div>

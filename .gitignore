@@ -5,6 +5,7 @@
 
 # Egendefinert
 /output/
+/.csstools.json
 
 # dotenv files
 .env
