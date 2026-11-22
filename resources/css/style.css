@@ -162,6 +162,29 @@ p {
 	font-size: inherit;
 }
 
+/* HEADER */
+.header-link {
+  color: var(--text-accent-secondary);
+  text-decoration: none;
+  font-weight: bold;
+  font-style: italic;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* END HEADER */
+
+/* CODE */
+code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
 /* ARTICLE */
 /*
 article {

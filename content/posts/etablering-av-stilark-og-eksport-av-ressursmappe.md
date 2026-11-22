@@ -115,14 +115,14 @@ I forbindelse med stilsettingen la jeg merke til at `pre`-feltene hadde så stor
 
 Måten å få det bort på var å bruke tilde `~` i malen for variabelen:
 
-```scriban
-{{~ content ~}}
+```html
+ {{~ content ~}}
 ```
 
 Jeg lærte forøvrig også at CamelCase i Scriban blir separert med understrek:
 
-```text
-{{~ for post in sitecontent.published_slugs | array.sort "published" | array.reverse  ~}}
+```html
+ {{~ for post in sitecontent.published_slugs | array.sort "published" | array.reverse  ~}}
 ```
 
 ### SiteContent
