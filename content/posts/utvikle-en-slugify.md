@@ -217,7 +217,6 @@ Følgende konklusjon:
 | Metatittel           | `metaTitle` i frontmatter | Tittelen                                                        |
 | Kladd                | `draft` i frontmatter     | `false` som standard, og automatisk false dersom tittel mangler |
 
-
 Med det, er alle oppgaver i del 2 av fase 1 fullført. Neste steg er å implementere maler, og koble dem til innholdet.
 
 **Del 2 av fase 1 fullført!:**

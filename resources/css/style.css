@@ -185,6 +185,38 @@ code {
   font-size: 0.9rem;
 }
 
+/* IMAGE */
+figcaption {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+/* END IMAGE */
+
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+tr:nth-child(even) {
+  background-color: var(--bg-secondary);
+}
+
+th {
+  background-color: var(--accent-secondary);
+  color: white;
+  font-weight: bold;
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  text-align: left;
+}
+
 /* ARTICLE */
 /*
 article {
@@ -213,3 +245,4 @@ article > div:has(pre) {
 */
 */
 /* END ARTICLE */
+

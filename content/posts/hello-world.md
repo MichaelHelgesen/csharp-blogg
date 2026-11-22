@@ -44,7 +44,7 @@ Jeg skal ikke starte helt på bar bakke, for det kan holde meg tilbake og gjøre
 
 HUGO er inspirasjonen, så jeg laget følgende struktur på prosjektet:
 
-```text
+```html
 Csharpblogg/
 ├── src/Csharpblogg.Generator/   # C#-koden
 ├── content/
