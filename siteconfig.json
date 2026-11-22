@@ -5,7 +5,7 @@
   "PagesFolder": "pages",
   "TemplatesPath": "templates",
   "SiteUrl": "",
-  "BasePath": "index.html",
+  "BasePath": "csharp-blogg",
   "Title": "Mikkes blogg",
   "ResourceFolder": "resources"
 }

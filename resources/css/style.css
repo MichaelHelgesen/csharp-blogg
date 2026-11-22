@@ -206,7 +206,7 @@ tr:nth-child(even) {
 }
 
 th {
-  background-color: var(--accent-secondary);
+  background-color: var(--accent-primary);
   color: white;
   font-weight: bold;
 }
