@@ -27,44 +27,7 @@ namespace CsharpBlogg.Generator.Services
 
                 var html = string.Empty;
 
-                // Definer template for innholdet, enten fra YAML eller default.
-                if (string.IsNullOrEmpty(contentItem.Template)) // Hvis YAML er tomt
-                {
-                    var pathcheck = File.Exists(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html"));
-                    //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html")}");
-                    if (pathcheck) // Hvis template finnes i templates/<contentType>/<filename>.html, bruk den.
-                    {
-                        //var file = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Filename + ".html").FirstOrDefault();
-                        contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html");
-                    }
-                    else // Hvis ikke, sjekk om default.html finnes i templates/<contentType>/default.html
-                    {
-                        var pathCheck = File.Exists(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html"));
-                        //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file2} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html")}");
-                        if (pathCheck) // Hvis default.html finnes i templates/<contentType>/default.html, bruk den.
-                        {
-                            // var file2 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), "default.html").FirstOrDefault();
-                            contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), "default.html");
-                        }
-                        else // Hvis ikke, bruk templates/general/default.html
-                        {
-                            //contentItem.Template = Path.Combine("general/default.html");
-                        }
-                    }
-                }
-                else // Hvis YAML har definert en template, sjekk om den finnes i templates/<contentType>/<template>.html
-                {
-                    var file3 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Template + ".html").FirstOrDefault();
-                    Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file3} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Template + ".html")}");
-                    if (file3 != null) // Hvis template finnes i templates/<contentType>/<template>.html, bruk den.
-                    {
-                        contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), contentItem.Template + ".html");
-                    }
-                    else // Hvis ikke, bruk templates/general/default.html
-                    {
-                        //contentItem.Template = Path.Combine("general/default.html");
-                    }
-                }
+                contentItem.Template = DefineTemplate(siteContent, contentItem);
 
 
                 // 1. Opprett en instans av loaderen med rotmappen for malene dine
@@ -166,6 +129,48 @@ namespace CsharpBlogg.Generator.Services
                 SaveFile.SaveFilesToDisk(siteContent.SiteConfig, contentItem);
             }
 
+        }
+        public static string DefineTemplate(SiteContent siteContent, ContentItem contentItem)
+        {
+            // Definer template for innholdet, enten fra YAML eller default.
+            if (string.IsNullOrEmpty(contentItem.Template)) // Hvis YAML er tomt
+            {
+                var pathcheck = File.Exists(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html"));
+                //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html")}");
+                if (pathcheck) // Hvis template finnes i templates/<contentType>/<filename>.html, bruk den.
+                {
+                    //var file = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Filename + ".html").FirstOrDefault();
+                    contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), contentItem.Filename + ".html");
+                }
+                else // Hvis ikke, sjekk om default.html finnes i templates/<contentType>/default.html
+                {
+                    var pathCheck = File.Exists(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html"));
+                    //Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file2} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), "default.html")}");
+                    if (pathCheck) // Hvis default.html finnes i templates/<contentType>/default.html, bruk den.
+                    {
+                        // var file2 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), "default.html").FirstOrDefault();
+                        contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), "default.html");
+                    }
+                    else // Hvis ikke, bruk templates/general/default.html
+                    {
+                        //contentItem.Template = Path.Combine("general/default.html");
+                    }
+                }
+            }
+            else // Hvis YAML har definert en template, sjekk om den finnes i templates/<contentType>/<template>.html
+            {
+                var file3 = Directory.EnumerateFiles(Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant()), contentItem.Template + ".html").FirstOrDefault();
+                Console.WriteLine($"Defining template for {contentItem.Filename} in path: {file3} -- {Path.Combine(siteContent.SiteConfig.TemplatesPath, contentItem.GetType().Name.ToLowerInvariant(), contentItem.Template + ".html")}");
+                if (file3 != null) // Hvis template finnes i templates/<contentType>/<template>.html, bruk den.
+                {
+                    contentItem.Template = Path.Combine(contentItem.GetType().Name.ToLowerInvariant(), contentItem.Template + ".html");
+                }
+                else // Hvis ikke, bruk templates/general/default.html
+                {
+                    //contentItem.Template = Path.Combine("general/default.html");
+                }
+            }
+            return contentItem.Template;
         }
     }
 }

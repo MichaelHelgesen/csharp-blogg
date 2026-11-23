@@ -109,6 +109,10 @@ pre {
 }
 ```
 
+Nå har jeg mye mer kontroll over stilsettingen, og det er mye enklere å vedlikeholde:
+
+{{ figure "ressursmappe.png" "Etablering av stilark" "Skjermbilde av etablering av stilark" }}
+
 ### Scriban
 
 I forbindelse med stilsettingen la jeg merke til at `pre`-feltene hadde så store innrykk at det ble vanskelig å lese koden. Jeg prøvde å sette `margin: 0`, `padding: 0`, og `tab-size` men det hjalp ikke. Det viste seg å være Scriban som la til innrykk i koden.

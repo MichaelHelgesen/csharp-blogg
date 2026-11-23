@@ -55,6 +55,10 @@ p, h1, h2, h3, h4, h5, h6 {
   /* Avstander (Spacing) */
   --heading-margin-top: 1.75em;
   --heading-margin-bottom: 0.5em;
+
+  /* Bildestil */
+  --border-radius: 6px; /* Myke hjørner på bilder */
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Diskré skygge for dybde */
 }
 /* END VARIABLES */
 
@@ -178,20 +182,36 @@ p {
 /* CODE */
 code {
   font-family: 'Courier New', Courier, monospace;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.9rem;
 }
 
 /* IMAGE */
+figure {
+  display: block;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
 figcaption {
   font-size: 0.9rem;
   color: var(--text-secondary);
   text-align: center;
   margin-top: 0.5rem;
 }
+
 /* END IMAGE */
 
 /* TABLE */

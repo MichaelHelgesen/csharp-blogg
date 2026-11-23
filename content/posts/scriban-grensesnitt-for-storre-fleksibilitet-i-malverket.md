@@ -268,6 +268,10 @@ Deretter finner jeg hovedmalen `default.html`, leser innholdet, parser det og re
 
 Da vil alle `include`-direktivene i malen automatisk bruke `MyIncludeFromDisk` til å laste inn de nødvendige malene.
 
+Her er resultatet, med mer inline stil:
+
+{{ figure "scriban-grensesnitt.png" "Mer inline stil" "Skjermbilde av Scriban-grensesnittet med mer inline stil" }}
+
 ## Annet jeg har lært og gjort i denne omgangen
 
 ### Rydding

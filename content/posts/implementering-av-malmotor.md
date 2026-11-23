@@ -195,7 +195,9 @@ Hello {{ name }}!
 </ul>
 ```
 
-Og det fungerte! Jeg fikk en liste over alle innlegg på forsiden, som kan trykkes på.
+Og det fungerte! Jeg fikk en liste over alle innlegg på forsiden, som kan trykkes på:
+
+{{ figure "malmotor1.png" "Skjermbilde av nettsiden med liste over innlegg" "Forsiden med liste over innlegg." }}
 
 ## Header-mal
 
@@ -229,6 +231,8 @@ html += Markdown.ToHtml(markdownTree, markdownPipeline); // Tekst til HTML
 Kaotisk og dårlig kode, men det virket også. Og det var så gøy!:
 
 Nå kan alle blogginnlegg lenke tilbake til forsiden.
+
+{{ figure "malmotor2.png" "Skjermbilde av nettsiden med header" "Blogginnlegg med header." }}
 
 Og med det er faktisk alt på plass for en første versjon av SSG-prosjektet. Jeg kan lage innhold, og det vises på nettsiden. Det er ikke mye, men det er en start.
 

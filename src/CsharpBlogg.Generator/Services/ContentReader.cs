@@ -49,6 +49,13 @@ namespace CsharpBlogg.Generator.Services
                     
                     if (yamlBlock != null)
                     {
+                        for(int i = 0; i < yamlBlock.Lines.Count; i++)
+                        {
+                            var line = yamlBlock.Lines.Lines[i];
+                            var lineText = fileAsString.Substring(line.Slice.Start, line.Slice.Length);
+                            //if(lineText )
+                            //Console.WriteLine($"YAML Line {i}: {lineText}");
+                        }
                         var yaml = yamlBlock.Lines.ToString(); // Henter rå YAML som streng
                         contentItem = yamlDeserializer.Deserialize<T>(yaml) ?? contentItem; // Instansierer et ContentItem-objekt og angir feltene, eller henviser til originalobjektet hvis tom YAML.
                         //contentItem.Markdown = (string?)fileAsString.Slice(yamlBlock.Span.End, fileAsString.Length - yamlBlock.Span.End); // Markdown-tekst til HTML
