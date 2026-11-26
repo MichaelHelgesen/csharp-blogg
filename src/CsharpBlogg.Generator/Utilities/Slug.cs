@@ -23,7 +23,7 @@ public static class SlugGenerator
         //test = Regex.Replace(test, @"[-]+", "-");
         titleCopy = titleCopy.Trim('-'); // kan ikke bruke ", for det er ikke char.
                                          //titleCopy = titleCopy.TrimStart('-'); // Trim tar begge ender, trenger ikke start og end
-        titleCopy += ".html";
+        //titleCopy += ".html";
         return titleCopy;
     }
 }

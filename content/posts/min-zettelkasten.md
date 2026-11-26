@@ -44,3 +44,4 @@ Mitt første møte med zettelkasten var i forbindelse med lanseringen av Roam Re
 
 ### Kathleen Spracken
 
+Det er en uskrevet regel å navngi sin zk. Min heter Agora, etter det greske ordet for samlingspunkt eller marked. 
