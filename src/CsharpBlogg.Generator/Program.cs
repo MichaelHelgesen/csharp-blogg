@@ -21,11 +21,6 @@ var pages = ContentReader.LoadContent<Page>(siteConfig.PageFolderPath);
 
 var siteContent = new SiteContent(siteConfig, posts, pages);
 
-foreach (var item in siteContent.AllTags)
-{
-    Console.WriteLine(item);
-}
-
 ContentConverter.WriteContentToHtml(siteContent);
 
 
